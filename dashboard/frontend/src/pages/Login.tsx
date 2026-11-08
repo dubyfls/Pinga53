@@ -2,6 +2,7 @@
 // Pinga53 — login gate. Logo splash + credentials. Optional MFA field.
 import { useState } from "react";
 import { authStore } from "../security/authStore";
+import CitadelleBg from "../components/CitadelleBg";
 
 export default function Login({ onAuthed }: { onAuthed: () => void }) {
   const [username, setU] = useState("");
@@ -27,7 +28,9 @@ export default function Login({ onAuthed }: { onAuthed: () => void }) {
   return (
     <div className="login-wrap">
       <div className="login-bg" />
-      <form className="login-card" onSubmit={submit}>
+      <div className="citadelle-word" aria-hidden="true">CITADELLE</div>
+      <CitadelleBg />
+      <form className="login-card login-card--foot" onSubmit={submit}>
         <div className="login-wordmark" role="img" aria-label="Pinga53">PINGA<b>53</b></div>
         <div className="login-sub">SECURE ACCESS · LOCAL CONTROL PLANE</div>
 

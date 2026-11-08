@@ -30,7 +30,7 @@ class Config:
     unbound_conf: str = "/etc/unbound/unbound.conf.d/pinga53.conf"
     scamwall_zone: str = "/etc/unbound/rpz/scamwall.zone"
     scamwall_state: str = "/var/lib/scamwall"
-    scamwall_stop_flag: str = "/var/lib/scamwall/STOP-AUTOMATIC"
+    scamwall_stop_flag: str = "/etc/pinga53/scamwall/STOP-AUTOMATIC"
     scamwall_install_log: str = "/var/log/pinga53/scamwall-install.log"
     helper_bin: str = "/usr/local/sbin/pinga53-helper"
     use_sudo_helper: bool = True
@@ -78,7 +78,7 @@ def load() -> Config:
         unbound_conf=_env("UNBOUND_CONF", "/etc/unbound/unbound.conf.d/pinga53.conf"),
         scamwall_zone=_env("SCAMWALL_ZONE", "/etc/unbound/rpz/scamwall.zone"),
         scamwall_state=_env("SCAMWALL_STATE", "/var/lib/scamwall"),
-        scamwall_stop_flag=_env("SCAMWALL_STOP_FLAG", "/var/lib/scamwall/STOP-AUTOMATIC"),
+        scamwall_stop_flag=_env("SCAMWALL_STOP_FLAG", "/etc/pinga53/scamwall/STOP-AUTOMATIC"),
         scamwall_install_log=_env("SCAMWALL_INSTALL_LOG", "/var/log/pinga53/scamwall-install.log"),
         helper_bin=_env("HELPER_BIN", "/usr/local/sbin/pinga53-helper"),
         use_sudo_helper=_bool("USE_SUDO_HELPER", True),

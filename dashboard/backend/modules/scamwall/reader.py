@@ -8,7 +8,7 @@ dashboard renders empty cards in that case.
 Sources read (defaults; all overridable in Config):
 
     /etc/unbound/unbound.conf.d/pinga53.conf   -> mode (shadow/enforce)
-    /var/lib/scamwall/STOP-AUTOMATIC           -> automatic-blocking flag
+    /etc/pinga53/scamwall/STOP-AUTOMATIC       -> automatic-blocking flag
     /etc/unbound/rpz/scamwall.zone             -> standing-hosts list
     /var/lib/scamwall/metrics/summary.json     -> hits-per-day (counts only)
     /var/lib/scamwall/journal/*.log            -> daily hits (per-host, newest)
@@ -68,17 +68,17 @@ class ScamWallReader:
     # ---- facets ----
 
     def mode(self) -> str:
+        """install.sh writes the scamwall rpz stanza with
+        "rpz-action-override: passthru" in shadow mode and without it in
+        enforce mode. No rpz stanza at all: unknown."""
         text = self._safe_read_text(self.unbound_conf)
         if text is None:
             return "unknown"
-        if re.search(r"^\s*response-policy-override\s*:\s*passthru\s*$", text, re.MULTILINE):
+        if re.search(r"^\s*(rpz-)?action-override\s*:\s*passthru\s*$", text, re.MULTILINE):
             return "shadow"
-        if re.search(r"rpz-\s*action-override\s*:\s*passthru|action-override\s*:\s*passthru", text):
-            return "shadow"
-        if re.search(r"\brpz-nxdomain\b|\baction-override\s*:\s*nxdomain", text):
+        if re.search(r"^rpz:", text, re.MULTILINE):
             return "enforce"
-        # Default: configuration present but we can't tell — treat as shadow.
-        return "shadow"
+        return "unknown"
 
     def stop_automatic(self) -> bool:
         return os.path.exists(self.stop_flag)
@@ -115,6 +115,24 @@ class ScamWallReader:
         total = int(s.get("shadow_hits") or s.get("hits_today") or 0)
         return {"total": total, "generated_at": s.get("generated_at")}
 
+    _HDR_FIELDS = ("source_id", "written_at", "record_count", "cadence_hours")
+
+    def _read_records_header(self, path: str) -> dict | None:
+        """Read only the leading summary fields of a records file. The
+        fetcher writes them before the (very large) records array, so the
+        first 8 KiB are enough and the file is never loaded whole."""
+        try:
+            with open(path, "rb") as fh:
+                head = fh.read(8192).decode("utf-8", "replace")
+        except Exception:
+            return None
+        out: dict = {}
+        for k in self._HDR_FIELDS:
+            m = re.search(r'"%s"\s*:\s*("([^"\\]*)"|-?[0-9.eE+]+)' % k, head)
+            if m:
+                out[k] = m.group(2) if m.group(2) is not None else float(m.group(1))
+        return out or None
+
     def feed_health(self) -> dict:
         """Per-source health from /var/lib/scamwall/records/<id>.json files.
 
@@ -136,7 +154,7 @@ class ScamWallReader:
         for name in entries:
             if not name.endswith(".json") or name.startswith("_"):
                 continue
-            body = self._safe_read_json(os.path.join(rec_dir, name))
+            body = self._read_records_header(os.path.join(rec_dir, name))
             if not body:
                 continue
             out.append({

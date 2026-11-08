@@ -174,3 +174,32 @@ class LastInstall(_ReaderBase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ModeFromInstallStanza(_ReaderBase):
+    """The exact stanzas install.sh writes for shadow and enforce."""
+
+    def test_install_shadow(self):
+        self.conf.write_text('rpz:\n    name: "scamwall.rpz"\n    zonefile: "z"\n    rpz-action-override: passthru\n')
+        self.assertEqual(self.r.mode(), "shadow")
+
+    def test_install_enforce_has_no_override(self):
+        self.conf.write_text('rpz:\n    name: "scamwall.rpz"\n    zonefile: "z"\n    rpz-log: yes\n')
+        self.assertEqual(self.r.mode(), "enforce")
+
+    def test_no_rpz_stanza_is_unknown(self):
+        self.conf.write_text("server:\n    port: 5335\n")
+        self.assertEqual(self.r.mode(), "unknown")
+
+
+class RecordsHeaderOnly(_ReaderBase):
+    def test_header_fields_without_loading_records(self):
+        big = ",".join('{"value":"h%d.example"}' % i for i in range(50000))
+        (self.state / "records" / "cert-polska-warning-list.json").write_text(
+            '{"schema_version":1,"source_id":"cert-polska-warning-list",'
+            '"written_at":"2026-11-08T00:00:00Z","cadence_hours":0.5,'
+            '"record_count":50000,"records":[' + big + ']}')
+        src = [x for x in self.r.feed_health()["sources"] if x["source_id"] == "cert-polska-warning-list"][0]
+        self.assertEqual(src["record_count"], 50000)
+        self.assertEqual(src["cadence_hours"], 0.5)
+        self.assertEqual(src["written_at"], "2026-11-08T00:00:00Z")

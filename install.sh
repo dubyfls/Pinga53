@@ -166,7 +166,7 @@ say "Pi-hole FTL v$ftl_major on ${PRETTY_NAME:-Linux}"
 say "installing packages"
 export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l
 apt-get update -qq
-apt-get install -y -qq unbound bind9-dnsutils bind9-utils python3 python3-venv sqlite3 curl ca-certificates tar openssl >/dev/null
+apt-get install -y -qq unbound bind9-dnsutils bind9-utils python3 python3-venv sqlite3 curl ca-certificates tar openssl rsync >/dev/null
 
 # ------------------------------------------------------------------ 3. Go
 go_ok() { command -v go >/dev/null && go version | grep -qE "go(1\.(2[6-9]|[3-9][0-9])|[2-9])\."; }
@@ -284,6 +284,8 @@ if $DASHBOARD; then
 
   id "$DASH_USER" >/dev/null 2>&1 \
     || useradd --system --home-dir "$DASH_STATE" --shell /usr/sbin/nologin "$DASH_USER"
+  # read-only access to ScamWall state (zone, records headers, metrics, journal)
+  usermod -aG scamwall "$DASH_USER"
 
   install -d -o root -g root -m 0755 /opt/pinga53 "$DASH_ROOT"
   install -d -o root -g "$DASH_USER" -m 0750 "$DASH_CONF"

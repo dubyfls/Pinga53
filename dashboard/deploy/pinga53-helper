@@ -12,14 +12,14 @@
 #
 # Allowed subcommands:
 #
-#   stop-on             create /var/lib/scamwall/STOP-AUTOMATIC
-#   stop-off            remove /var/lib/scamwall/STOP-AUTOMATIC
-#   mode-shadow         flip Unbound's policy-zone action to passthru
-#   mode-enforce        flip Unbound's policy-zone action to NXDOMAIN
+#   stop-on             create /etc/pinga53/scamwall/STOP-AUTOMATIC (policy emergency_disable_path)
+#   stop-off            remove it
+#   mode-shadow         add "rpz-action-override: passthru" to the scamwall rpz stanza
+#   mode-enforce        remove that override (zone entries answer NXDOMAIN)
 #   protect-add  HOST   append HOST to /etc/pinga53/scamwall/protected.txt
 #   protect-remove HOST remove HOST from the same file
-#   run-now             invoke `scamwall fetch`, `scamwall decide`, and the
-#                       zone-install script, in that order.
+#   run-now             start scamwall-fetch, scamwall-run and
+#                       pinga53-scamwall-zone-install, in that order.
 #
 # Exit codes: 0 ok, 1 invalid argument, 2 refusal (not root, bad caller),
 # 3 operation failed (see stderr). Nothing is printed on stdout other than
@@ -30,13 +30,13 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export LC_ALL=C
 
 STATE_DIR=${PINGA53_SCAMWALL_STATE:-/var/lib/scamwall}
-STOP_FLAG=${PINGA53_SCAMWALL_STOP_FLAG:-$STATE_DIR/STOP-AUTOMATIC}
+STOP_FLAG=${PINGA53_SCAMWALL_STOP_FLAG:-/etc/pinga53/scamwall/STOP-AUTOMATIC}
 UNBOUND_CONF=${PINGA53_UNBOUND_CONF:-/etc/unbound/unbound.conf.d/pinga53.conf}
 PROTECTED=${PINGA53_PROTECTED:-/etc/pinga53/scamwall/protected.txt}
 SCAMWALL_BIN=${PINGA53_SCAMWALL_BIN:-/usr/local/bin/scamwall}
 INSTALL_LOG=${PINGA53_SCAMWALL_INSTALL_LOG:-/var/log/pinga53/scamwall-install.log}
-# A custom install script path, if any. Defaults to a built-in step.
-INSTALL_SCRIPT=${PINGA53_SCAMWALL_INSTALL_SCRIPT:-/usr/local/sbin/scamwall-install-zone}
+SYSTEMCTL=${PINGA53_SYSTEMCTL:-systemctl}
+CHECKCONF=${PINGA53_UNBOUND_CHECKCONF:-unbound-checkconf}
 
 die()  { printf 'pinga53-helper: %s\n' "$*" >&2; exit 3; }
 bad()  { printf 'pinga53-helper: invalid argument: %s\n' "$*" >&2; exit 1; }
@@ -68,7 +68,7 @@ validate_host() {
 }
 
 cmd_stop_on() {
-  mkdir -p -- "$STATE_DIR"
+  mkdir -p -- "$(dirname -- "$STOP_FLAG")"
   : > "$STOP_FLAG"
   echo "stop-on: created $STOP_FLAG"
 }
@@ -82,32 +82,38 @@ cmd_stop_off() {
 # look for a rpz line and set its action-override. If no rpz stanza is
 # present we refuse — this is not the helper's job to invent.
 set_mode() {
+  # Same stanza install.sh writes: "rpz-action-override: passthru" present
+  # = shadow, absent = enforce. Edit a copy, check it, then swap it in;
+  # a config that fails unbound-checkconf is never left in place.
   local wanted=$1
   [ -f "$UNBOUND_CONF" ] || die "unbound config not found: $UNBOUND_CONF"
-  local tmp
-  tmp=$(mktemp -p /tmp pinga53.unbound.XXXXXX)
-  trap 'rm -f -- "$tmp"' EXIT
-  # Replace the action-override line, add one if absent at the end of the
-  # rpz: stanza. Keep the file's existing shape untouched otherwise.
+  grep -q '^rpz:' "$UNBOUND_CONF" || die "no rpz stanza in $UNBOUND_CONF"
+  local tmp bak
+  tmp=$(mktemp -p "$(dirname -- "$UNBOUND_CONF")" .pinga53.unbound.XXXXXX)
+  bak=$(mktemp -p "$(dirname -- "$UNBOUND_CONF")" .pinga53.unbound.bak.XXXXXX)
+  trap 'rm -f -- "$tmp" "$bak"' EXIT
+  cp -p -- "$UNBOUND_CONF" "$bak"
   awk -v mode="$wanted" '
-    BEGIN { replaced=0; in_rpz=0 }
-    /^rpz:/  { in_rpz=1; print; next }
-    /^[^[:space:]]/ && in_rpz { in_rpz=0 }
-    in_rpz && /action-override:/ {
-      sub(/action-override:.*/, "action-override: " mode); replaced=1; print; next
-    }
+    /^[[:space:]]*rpz-action-override:/ { next }
     { print }
-    END { if (!replaced) print "    action-override: " mode }
-  ' "$UNBOUND_CONF" > "$tmp"
+    mode == "shadow" && /^[[:space:]]*zonefile:/ && !done { print "    rpz-action-override: passthru"; done=1 }
+  ' "$bak" > "$tmp"
+  if [ "$wanted" = shadow ] && ! grep -q 'rpz-action-override: passthru' "$tmp"; then
+    die "could not place the passthru override (no zonefile: line)"
+  fi
   install -m 0644 -o root -g root -- "$tmp" "$UNBOUND_CONF"
-  rm -f -- "$tmp"; trap - EXIT
-  systemctl reload unbound >/dev/null 2>&1 || systemctl restart unbound
+  if ! "$CHECKCONF" >/dev/null 2>&1; then
+    install -m 0644 -o root -g root -- "$bak" "$UNBOUND_CONF"
+    die "unbound-checkconf rejected the change; previous config restored"
+  fi
+  "$SYSTEMCTL" reload unbound >/dev/null 2>&1 || "$SYSTEMCTL" restart unbound
+  rm -f -- "$tmp" "$bak"; trap - EXIT
   echo "mode: $wanted"
 }
+cmd_mode_shadow()  { set_mode shadow; }
+cmd_mode_enforce() { set_mode enforce; }
 
-cmd_mode_shadow()  { set_mode passthru; }
-cmd_mode_enforce() { set_mode nxdomain; }
-
+protected_group() { getent group scamwall >/dev/null 2>&1 && echo scamwall || id -gn; }
 cmd_protect_add() {
   validate_host "${1:-}"
   install -d -m 0755 -- "$(dirname -- "$PROTECTED")"
@@ -118,6 +124,7 @@ cmd_protect_add() {
     return 0
   fi
   printf '%s\n' "$1" >> "$PROTECTED"
+  chgrp -- "$(protected_group)" "$PROTECTED" 2>/dev/null || true; chmod 0640 -- "$PROTECTED"
   echo "protect-add: $1"
 }
 
@@ -127,21 +134,19 @@ cmd_protect_remove() {
   local tmp
   tmp=$(mktemp -p "$(dirname -- "$PROTECTED")" .protected.XXXXXX)
   grep -vxF -- "$1" "$PROTECTED" > "$tmp" || true
-  install -m 0644 -- "$tmp" "$PROTECTED"
+  install -m 0640 -- "$tmp" "$PROTECTED"
+  chgrp -- "$(protected_group)" "$PROTECTED" 2>/dev/null || true
   rm -f -- "$tmp"
   echo "protect-remove: $1"
 }
 
 cmd_run_now() {
-  [ -x "$SCAMWALL_BIN" ] || die "scamwall binary not found: $SCAMWALL_BIN"
   install -d -m 0755 -- "$(dirname -- "$INSTALL_LOG")"
   {
     date -u +'%FT%TZ run-now begin'
-    "$SCAMWALL_BIN" fetch  || die "fetch failed"
-    "$SCAMWALL_BIN" decide || die "decide failed"
-    if [ -x "$INSTALL_SCRIPT" ]; then
-      "$INSTALL_SCRIPT" || die "install script failed"
-    fi
+    "$SYSTEMCTL" start scamwall-fetch.service || echo "run-now: some sources failed to fetch (see journalctl -u scamwall-fetch)"
+    "$SYSTEMCTL" start scamwall-run.service || die "decision run failed (journalctl -u scamwall-run)"
+    "$SYSTEMCTL" start pinga53-scamwall-zone-install.service || die "zone install failed (journalctl -u pinga53-scamwall-zone-install)"
     date -u +'%FT%TZ run-now end'
   } >> "$INSTALL_LOG" 2>&1
   echo "run-now: logged to $INSTALL_LOG"

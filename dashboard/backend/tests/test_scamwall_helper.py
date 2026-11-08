@@ -177,3 +177,51 @@ class SubcommandAllowlist(_FakeRootBase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ModeSwitch(_FakeRootBase):
+    """mode-shadow / mode-enforce edit the rpz stanza install.sh writes."""
+
+    STANZA = ('rpz:\n    name: "scamwall.rpz"\n    zonefile: "/etc/unbound/rpz/scamwall.zone"\n'
+              '    rpz-action-override: passthru\n    rpz-log: yes\n')
+
+    def _env(self, checkconf_ok=True):
+        conf = self.tmp / "pinga53.conf"
+        if not conf.exists():
+            conf.write_text(self.STANZA)
+        stub = self.tmp / "bin"; stub.mkdir(exist_ok=True)
+        (stub / "checkconf").write_text("#!/bin/sh\nexit %d\n" % (0 if checkconf_ok else 1))
+        (stub / "systemctl").write_text("#!/bin/sh\nexit 0\n")
+        for f in ("checkconf", "systemctl"):
+            os.chmod(stub / f, 0o755)
+        return conf, {"PINGA53_UNBOUND_CONF": str(conf),
+                      "PINGA53_UNBOUND_CHECKCONF": str(stub / "checkconf"),
+                      "PINGA53_SYSTEMCTL": str(stub / "systemctl")}
+
+    def _can_install(self):
+        return os.geteuid() == 0
+
+    def test_enforce_then_shadow_round_trip(self):
+        if not self._can_install():
+            self.skipTest("install -o root needs real root")
+        conf, extra = self._env()
+        self.assertEqual(self._run("mode-enforce", env_extra=extra).returncode, 0)
+        self.assertNotIn("rpz-action-override", conf.read_text())
+        self.assertEqual(self._run("mode-shadow", env_extra=extra).returncode, 0)
+        self.assertEqual(conf.read_text().count("rpz-action-override: passthru"), 1)
+
+    def test_rejected_config_is_restored(self):
+        if not self._can_install():
+            self.skipTest("install -o root needs real root")
+        conf, extra = self._env(checkconf_ok=False)
+        before = conf.read_text()
+        r = self._run("mode-enforce", env_extra=extra)
+        self.assertEqual(r.returncode, 3)
+        self.assertEqual(conf.read_text(), before)
+
+    def test_mode_requires_rpz_stanza(self):
+        conf, extra = self._env()
+        conf.write_text("server:\n    port: 5335\n")
+        r = self._run("mode-enforce", env_extra=extra)
+        self.assertEqual(r.returncode, 3)
+        self.assertIn("no rpz stanza", r.stderr)
