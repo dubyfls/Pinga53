@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "note": "Pinga53 default policy. A domain is proposed only when at least two INDEPENDENT sources agree (two feeds from the same provider count as one voice). Household 'never block' entries go in exceptions or in Pi-hole's allow list. The automatic contract caps how much can change per run and per day; create emergency_disable_path to stop all automatic blocking at once. household_local_use: this install blocks only for its own network, so decisions use local rights (retrieval, local_storage, enrichment); anything published still needs derived_output + redistribution.",
+  "min_independent_sources": 2,
+  "proposal_scope": "exact",
+  "accept_unestablished_independence": false,
+  "accept_authoritative_alone": false,
+  "household_local_use": true,
+  "exceptions": [],
+  "automatic": {
+    "enabled": true,
+    "max_additions_per_run": 200,
+    "max_removals_per_run": 200,
+    "max_additions_per_day": 1000,
+    "max_removals_per_day": 1000,
+    "block_lifetime": "168h",
+    "on_source_outage": "hold_existing_blocks",
+    "alert_channel": "journalctl -u scamwall-run",
+    "emergency_disable_path": "/etc/pinga53/scamwall/STOP-AUTOMATIC"
+  }
+}

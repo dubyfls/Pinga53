@@ -1,0 +1,7 @@
+[
+  {"name_value": "brand-support-signin.net\nwww.brand-support-signin.net", "common_name": "brand-support-signin.net", "entry_timestamp": "2026-11-05T09:00:00.000000"},
+  {"name_value": "customerportal.brand.com", "common_name": "customerportal.brand.com", "entry_timestamp": "2026-11-05T09:30:00.000000"},
+  {"name_value": "brand.com", "common_name": "brand.com", "entry_timestamp": "2026-11-05T09:30:00.000000"},
+  {"name_value": "*.secure-brand-login.org", "common_name": "*.secure-brand-login.org", "entry_timestamp": "2026-11-06T10:00:00.000000"},
+  {"name_value": "unrelated.example.com", "common_name": "unrelated.example.com", "entry_timestamp": "2026-11-06T11:00:00.000000"}
+]

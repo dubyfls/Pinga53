@@ -1,0 +1,14 @@
+[Unit]
+Description=Run Pinga53 ScamWall daily gate-measurement at 03:30 UTC
+
+[Timer]
+# Once a day. Ten minutes after the last hourly scamwall-run so the
+# previous day's standing set is stable.
+OnCalendar=*-*-* 03:30:00 UTC
+Persistent=yes
+RandomizedDelaySec=10min
+AccuracySec=1min
+Unit=scamwall-metrics.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,35 @@
+Pinga53
+Copyright (c) 2026 Dee (github.com/dubyfls). All rights reserved
+except as granted by the licenses below.
+
+Code: GNU Affero General Public License v3.0 only (LICENSE).
+      Also available under a commercial license (COMMERCIAL.md).
+Pinga53 Data: CC BY-NC-SA 4.0 (LICENSE-DATA.md).
+      Commercial use requires a paid license (COMMERCIAL.md).
+
+"Pinga53" and "ScamWall" are names used by this project. The licenses
+above do not grant permission to use these names or any logo, except to
+say truthfully that your work is based on Pinga53.
+
+Third-party software and data
+-----------------------------
+Pinga53 is built to work with the following projects. It does not bundle
+their code or data, and is not affiliated with or endorsed by them:
+
+- Pi-hole (pi-hole.net), EUPL-1.2
+- Unbound (NLnet Labs), BSD-3-Clause
+- The Go programming language and its modules, see engine/go.sum
+
+Feed data is downloaded by each installation directly from its provider
+and remains under that provider's terms:
+
+- CERT Polska warning list (cert.pl): may be used for any purpose,
+  including commercial. Do not use NASK-PIB names or logos.
+- Phishing.Database (github.com/Phishing-Database/Phishing.Database):
+  MIT License. Any redistribution of its data must include its
+  copyright and permission notice.
+- OpenPhish community feed (openphish.com): personal use only; no
+  redistribution or derivative works.
+- abuse.ch URLhaus and ThreatFox (abuse.ch): free for not-for-profit use;
+  commercial use requires a Spamhaus subscription; no derivative works
+  without the consent of abuse.ch / Spamhaus; not for AI model training.

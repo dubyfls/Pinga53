@@ -1,0 +1,49 @@
+[Unit]
+Description=Pinga53 ScamWall — daily baseline snapshot of free RPZ stack
+Documentation=file:///opt/pinga53/scamwall/docs/orders/ORDER_17B_PROGRESS.md
+# Snapshots /etc/unbound/rpz/{urlhaus.zone,nrd.zone} into
+# /var/lib/scamwall/baseline/<UTC_DATE>.json so `scamwall metrics` has
+# a day-over-day baseline for the gate decision. Never snapshots
+# allowlist.local (household-private) or canary.local (test fixture).
+
+[Service]
+Type=oneshot
+User=scamwall
+Group=scamwall
+
+ExecStart=/usr/local/sbin/pinga53-baseline-snapshot.sh \
+  --rpz-dir /etc/unbound/rpz \
+  --out-dir /var/lib/scamwall/baseline
+
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=1G
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+# The script reads /etc/unbound/rpz (world-readable) and writes under
+# /var/lib/scamwall/baseline. Nothing else.
+ReadOnlyPaths=/etc/unbound/rpz
+ReadWritePaths=/var/lib/scamwall/baseline
+
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

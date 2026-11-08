@@ -1,0 +1,1010 @@
+{
+  "schema_version": 2,
+  "note": "Pinga53 source registry. Each source records the provider terms that govern it, quoted and dated, for every operation. Enabled: CERT Polska, Phishing.Database, OpenPhish community, abuse.ch URLhaus and ThreatFox (the abuse.ch pair need a key and count as one voice). CT brand watch stays disabled until brands.txt is filled and its terms are cited.",
+  "retired_source_ids": [],
+  "external_origins": [
+    "abusech",
+    "openphish",
+    "phishingdatabase_mitchellkrogza",
+    "certpl",
+    "crtsh"
+  ],
+  "sources": [
+    {
+      "source_id": "pinga53-local",
+      "catalog_ref": "none",
+      "requested_priority": "unknown",
+      "official_name": "Pinga53 local evidence stream",
+      "official_documentation": "unknown",
+      "verified_on": "unknown",
+      "kind": "bulk feed",
+      "indicator_types": [
+        "domain"
+      ],
+      "classification_meaning": "The local shim signs evidence it either produced by fetching enabled sources or by emitting the pinga53-liveness-sentinel.invalid record when no fetchers are wired.",
+      "authentication": "none",
+      "quotas": "unknown",
+      "update_cadence": "unknown",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "unknown",
+      "derived_data_restrictions": "unknown",
+      "upstream_sources": [],
+      "upstream_sources_completeness": "documented_complete",
+      "aggregation_dependencies": [],
+      "access_status": "unresolved",
+      "disposition_reason": "The source is this installation; access is trivially available because the data is produced on this host.",
+      "privacy_implications": "unknown",
+      "intended_permitted_use": "unknown",
+      "coverage_limitations": "unknown",
+      "operational_cost": "unknown",
+      "intended_operations": [],
+      "permissions": {
+        "retrieval": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        },
+        "model_training": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "not_applicable",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://pinga53.invalid/local-source",
+                "checked_on": "2026-10-01",
+                "quote": "local evidence stream; the operation does not apply"
+              }
+            ]
+          }
+        }
+      },
+      "enabled": false
+    },
+    {
+      "source_id": "urlhaus",
+      "catalog_ref": "none",
+      "requested_priority": "high",
+      "official_name": "URLhaus (abuse.ch)",
+      "official_documentation": "https://urlhaus.abuse.ch/api/",
+      "verified_on": "2026-11-07",
+      "kind": "bulk feed",
+      "indicator_types": [
+        "url",
+        "domain"
+      ],
+      "classification_meaning": "A listing means abuse.ch vetted the URL as distributing malware. Not a phishing or scam judgement.",
+      "authentication": "key",
+      "quotas": "Fair use; not published numerically on the page read.",
+      "update_cadence": "Continuous community submission; bulk dump offered.",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "unknown",
+      "derived_data_restrictions": "No derivative works of the Platforms without express consent (\u00a77.3); data may not be used to train AI models.",
+      "upstream_sources": [
+        "abuse.ch"
+      ],
+      "upstream_labels": [
+        "abusech"
+      ],
+      "upstream_sources_completeness": "documented_complete",
+      "aggregation_dependencies": [],
+      "access_status": "verified-available",
+      "disposition_reason": "terms at https://abuse.ch/terms-of-use/ were read on 2026-11-07. \u00a73.1 permits free access for not-for-profit purposes; \u00a77.3 forbids derivative works without consent; AI-training is forbidden. Enabled for retrieval/local_storage/enrichment under the household not-for-profit condition, satisfied. commercial_use and derived_output and redistribution are refused: either conditional-not-satisfied (commercial requires a Spamhaus subscription) or prohibited outright (derived, redistribution). The abuse.ch Auth-Key is still required at retrieval time; a missing key is reported as a skip, not a failure, by scamwall fetch.",
+      "privacy_implications": "Records describe attacker infrastructure, not household activity. Bulk download only; no live query.",
+      "intended_permitted_use": "Local, non-commercial detection for one household.",
+      "coverage_limitations": "Malware distribution URLs only; not phishing or adware.",
+      "operational_cost": "Free under fair use for non-commercial; commercial API priced separately.",
+      "intended_operations": [
+        "retrieval",
+        "local_storage",
+        "enrichment"
+      ],
+      "permissions": {
+        "retrieval": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "not-for-profit-household",
+              "text": "Access is free for not-for-profit purposes; commercial use may require a paid subscription.",
+              "satisfied": "yes",
+              "basis": "Pinga53 is a single-household lab; no paid product, no customers; the use falls within \u00a73.1's not-for-profit clause."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a73.1 free access is for \"not-for-profit purposes\"; \u00a74.1 commercial users \"may require a paid subscription\"; \u00a77.3 no derivative works based on the Platforms without \"the express consent of abuse.ch and/or Spamhaus\"; Data \"may not be used \u2026 to customise, train, or otherwise improve any artificial intelligence model\""
+              }
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "not-for-profit-household",
+              "text": "Access is free for not-for-profit purposes.",
+              "satisfied": "yes",
+              "basis": "Keeping a local copy for single-household non-profit lookup is covered by \u00a73.1's free, not-for-profit grant."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a73.1 free access is for \"not-for-profit purposes\""
+              }
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "not-for-profit-household",
+              "text": "Access is free for not-for-profit purposes.",
+              "satisfied": "yes",
+              "basis": "Enriching household observations is still an internal, not-for-profit use."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a73.1 free access is for \"not-for-profit purposes\""
+              }
+            ]
+          }
+        },
+        "model_training": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "Data \"may not be used \u2026 to customise, train, or otherwise improve any artificial intelligence model\""
+              }
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "spamhaus-subscription",
+              "text": "Commercial use requires a paid Spamhaus/abuse.ch subscription.",
+              "satisfied": "no",
+              "basis": "Pinga53 has no such subscription; the paid feed cannot carry URLhaus-only entries."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a74.1 commercial users \"may require a paid subscription\""
+              }
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a77.3 no derivative works based on the Platforms without \"the express consent of abuse.ch and/or Spamhaus\""
+              }
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a77.3 no derivative works based on the Platforms without \"the express consent of abuse.ch and/or Spamhaus\""
+              }
+            ]
+          }
+        }
+      },
+      "enabled": true
+    },
+    {
+      "source_id": "threatfox",
+      "catalog_ref": "none",
+      "requested_priority": "high",
+      "official_name": "ThreatFox (abuse.ch)",
+      "official_documentation": "https://threatfox.abuse.ch/faq/",
+      "verified_on": "2026-11-07",
+      "kind": "lookup API",
+      "indicator_types": [
+        "domain",
+        "url",
+        "ipv4",
+        "file-hash"
+      ],
+      "classification_meaning": "A community-submitted IOC associated with malware, vetted by abuse.ch. Spam and phishing are excluded by the submission policy.",
+      "authentication": "key",
+      "quotas": "Fair use; not published numerically on the page read.",
+      "update_cadence": "Continuous community submission.",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "unknown",
+      "derived_data_restrictions": "No derivative works of the Platforms without express consent (\u00a77.3); data may not be used to train AI models.",
+      "upstream_sources": [
+        "abuse.ch"
+      ],
+      "upstream_labels": [
+        "abusech"
+      ],
+      "upstream_sources_completeness": "documented_complete",
+      "aggregation_dependencies": [],
+      "access_status": "verified-available",
+      "disposition_reason": "shares abuse.ch's terms page with URLhaus. Enabled for retrieval/local_storage/enrichment under the household not-for-profit condition. commercial_use conditional (needs a Spamhaus subscription, not satisfied); redistribution and derived_output prohibited (\u00a77.3); model_training prohibited. The abuse.ch Auth-Key is shared with URLhaus and read from the same secrets file.",
+      "privacy_implications": "Indicators describe attacker infrastructure.",
+      "intended_permitted_use": "Local, non-commercial detection for one household.",
+      "coverage_limitations": "Malware IOCs only; spam and phishing excluded.",
+      "operational_cost": "Free under fair use for non-commercial.",
+      "intended_operations": [
+        "retrieval",
+        "local_storage",
+        "enrichment"
+      ],
+      "permissions": {
+        "retrieval": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "not-for-profit-household",
+              "text": "Access is free for not-for-profit purposes; commercial use may require a paid subscription.",
+              "satisfied": "yes",
+              "basis": "Pinga53 is a single-household lab; no paid product, no customers; the use falls within \u00a73.1's not-for-profit clause."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a73.1 free access is for \"not-for-profit purposes\"; \u00a74.1 commercial users \"may require a paid subscription\"; \u00a77.3 no derivative works based on the Platforms without \"the express consent of abuse.ch and/or Spamhaus\"; Data \"may not be used \u2026 to customise, train, or otherwise improve any artificial intelligence model\""
+              }
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "not-for-profit-household",
+              "text": "Access is free for not-for-profit purposes.",
+              "satisfied": "yes",
+              "basis": "Keeping a local copy for single-household non-profit lookup is covered by \u00a73.1's free, not-for-profit grant."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a73.1 free access is for \"not-for-profit purposes\""
+              }
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "not-for-profit-household",
+              "text": "Access is free for not-for-profit purposes.",
+              "satisfied": "yes",
+              "basis": "Enriching household observations is still an internal, not-for-profit use."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a73.1 free access is for \"not-for-profit purposes\""
+              }
+            ]
+          }
+        },
+        "model_training": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "Data \"may not be used \u2026 to customise, train, or otherwise improve any artificial intelligence model\""
+              }
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "spamhaus-subscription",
+              "text": "Commercial use requires a paid Spamhaus/abuse.ch subscription.",
+              "satisfied": "no",
+              "basis": "Pinga53 has no such subscription; the paid feed cannot carry ThreatFox-only entries."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a74.1 commercial users \"may require a paid subscription\""
+              }
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a77.3 no derivative works based on the Platforms without \"the express consent of abuse.ch and/or Spamhaus\""
+              }
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://abuse.ch/terms-of-use/",
+                "checked_on": "2026-11-07",
+                "quote": "\u00a77.3 no derivative works based on the Platforms without \"the express consent of abuse.ch and/or Spamhaus\""
+              }
+            ]
+          }
+        }
+      },
+      "enabled": true
+    },
+    {
+      "source_id": "openphish-community",
+      "catalog_ref": "none",
+      "requested_priority": "high",
+      "official_name": "OpenPhish community feed",
+      "official_documentation": "https://openphish.com/terms.html",
+      "verified_on": "2026-11-07",
+      "kind": "bulk feed",
+      "indicator_types": [
+        "url",
+        "domain"
+      ],
+      "classification_meaning": "A URL listed by OpenPhish's community feed is one its scoring judged phishing. The community feed is the free tier; commercial feeds are a separate product under separate terms.",
+      "authentication": "none",
+      "quotas": "unknown",
+      "update_cadence": "Multiple times per day (OpenPhish community feed).",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "unknown",
+      "derived_data_restrictions": "No derivative works, no commercial use, no redistribution.",
+      "upstream_sources": [],
+      "upstream_labels": [
+        "openphish"
+      ],
+      "upstream_sources_completeness": "documented_complete",
+      "aggregation_dependencies": [],
+      "access_status": "verified-available",
+      "disposition_reason": "terms at https://openphish.com/terms.html were read on 2026-11-07. The feed is for personal (household) use only \u2014 no commercial use, no redistribution, no derivative works. The public_feed README reinforces non-commercial use. Enabled for retrieval/local_storage/enrichment under the household personal-use condition, satisfied. Everything else is prohibited.",
+      "privacy_implications": "Records describe phishing URLs, not household activity.",
+      "intended_permitted_use": "Local, non-commercial detection for one household.",
+      "coverage_limitations": "Community feed only; paid tiers would carry more entries.",
+      "operational_cost": "Free for personal use.",
+      "intended_operations": [
+        "retrieval",
+        "local_storage",
+        "enrichment"
+      ],
+      "permissions": {
+        "retrieval": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "personal-household",
+              "text": "The services are provided solely for personal (household) use.",
+              "satisfied": "yes",
+              "basis": "Pinga53 is a single-household resolver; fetching the community feed for that scope is within the personal-use grant."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "The Services are provided solely for your personal use."
+              },
+              {
+                "url": "https://github.com/openphish/public_feed",
+                "checked_on": "2026-11-07",
+                "quote": "Non-commercial use only"
+              }
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "personal-household",
+              "text": "The services are provided solely for personal (household) use.",
+              "satisfied": "yes",
+              "basis": "Keeping a local copy for household non-commercial lookup is within the personal-use grant."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "The Services are provided solely for your personal use."
+              }
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "personal-household",
+              "text": "The services are provided solely for personal (household) use.",
+              "satisfied": "yes",
+              "basis": "Enriching household observations is within the personal-use grant."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "The Services are provided solely for your personal use."
+              }
+            ]
+          }
+        },
+        "model_training": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "not to license, sell, rent, lease, transfer, assign, distribute, display, disclose, create derivative works"
+              },
+              {
+                "url": "https://github.com/openphish/public_feed",
+                "checked_on": "2026-11-07",
+                "quote": "Non-commercial use only"
+              }
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "The Services are provided solely for your personal use."
+              },
+              {
+                "url": "https://github.com/openphish/public_feed",
+                "checked_on": "2026-11-07",
+                "quote": "Non-commercial use only"
+              }
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "not to license, sell, rent, lease, transfer, assign, distribute, display, disclose, create derivative works"
+              }
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "prohibited",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://openphish.com/terms.html",
+                "checked_on": "2026-11-07",
+                "quote": "not to license, sell, rent, lease, transfer, assign, distribute, display, disclose, create derivative works"
+              }
+            ]
+          }
+        }
+      },
+      "enabled": true
+    },
+    {
+      "source_id": "phishing-database",
+      "catalog_ref": "none",
+      "requested_priority": "medium",
+      "official_name": "Phishing.Database (Phishing-Database org)",
+      "official_documentation": "https://github.com/Phishing-Database/Phishing.Database",
+      "verified_on": "2026-11-07",
+      "kind": "corpus",
+      "indicator_types": [
+        "domain"
+      ],
+      "classification_meaning": "A domain listed by Phishing.Database is one the project's aggregation judged phishing. The project aggregates other feeds; the upstream list is not fully enumerated and the agent could not confirm whether OpenPhish is among them.",
+      "authentication": "none",
+      "quotas": "unknown",
+      "update_cadence": "Hourly (per the README at the time of writing).",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "unknown",
+      "derived_data_restrictions": "MIT: the copyright and permission notice shall be included in all copies or substantial portions.",
+      "upstream_sources": [],
+      "upstream_labels": [],
+      "upstream_sources_completeness": "documented_partial",
+      "aggregation_dependencies": [],
+      "access_status": "verified-available",
+      "disposition_reason": "the repository's LICENSE is MIT; terms at https://github.com/Phishing-Database/Phishing.Database were read on 2026-11-07. All seven operations are conditional on the MIT notice being included in copies or substantial portions. Retrieval, local_storage and enrichment are satisfied (the Pinga53 FEED-LICENSE / NOTICE carries the MIT notice alongside any local copy). redistribution and derived_output are left satisfied=unknown pending a FEED-LICENSE/NOTICE-header TODO: the publisher must emit the MIT notice at the top of the published Pinga53 list before the condition is satisfied for those operations. The project aggregates other feeds; its upstream list is partial so lineage treats it conservatively (IndependenceClaimable is false).",
+      "privacy_implications": "Records describe phishing domains.",
+      "intended_permitted_use": "Local, non-commercial detection.",
+      "coverage_limitations": "Depends on the project's own aggregation; may overlap with OpenPhish if OpenPhish is among the upstreams.",
+      "operational_cost": "free",
+      "intended_operations": [
+        "retrieval",
+        "local_storage",
+        "enrichment"
+      ],
+      "permissions": {
+        "retrieval": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "yes",
+              "basis": "The MIT notice is kept at scamwall/FEED-LICENSE.md and NOTICE; a local copy is accompanied by that notice, so the retrieval does not produce a notice-less copy."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "yes",
+              "basis": "The MIT notice is kept at scamwall/FEED-LICENSE.md and NOTICE alongside the locally stored copy."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "yes",
+              "basis": "Internal enrichment does not create a published copy; the local NOTICE still travels with any copy that is kept."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        },
+        "model_training": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "unknown",
+              "basis": "Pinga53 does not train models; the condition's applicability to training is not established here."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "unknown",
+              "basis": "MIT permits commercial use subject to the notice; the Pinga53 paid feed's header does not yet emit the MIT notice for Phishing.Database (TODO)."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "unknown",
+              "basis": "TODO \u2014 the publisher must emit the MIT notice in the published list header before this is satisfied. FEED-LICENSE/NOTICE tracks the TODO."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "conditional",
+          "conditions": [
+            {
+              "id": "mit-notice",
+              "text": "The copyright and permission notice shall be included in all copies or substantial portions.",
+              "satisfied": "unknown",
+              "basis": "TODO \u2014 the publisher must emit the MIT notice in the published derived output's header before this is satisfied. FEED-LICENSE/NOTICE tracks the TODO."
+            }
+          ],
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://github.com/Phishing-Database/Phishing.Database",
+                "checked_on": "2026-11-07",
+                "quote": "MIT License: \"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\""
+              }
+            ]
+          }
+        }
+      },
+      "enabled": true
+    },
+    {
+      "source_id": "cert-polska-warning-list",
+      "catalog_ref": "none",
+      "requested_priority": "medium",
+      "official_name": "CERT Polska warning list",
+      "official_documentation": "https://cert.pl/en/warning-list/",
+      "verified_on": "2026-11-07",
+      "kind": "advisory source",
+      "indicator_types": [
+        "domain"
+      ],
+      "classification_meaning": "A domain on the CERT Polska warning list is one NASK-PIB has flagged as a scam or phishing site, under the Polish anti-scam law.",
+      "authentication": "none",
+      "quotas": "unknown",
+      "update_cadence": "Multiple updates per day (per the published page).",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "no",
+      "derived_data_restrictions": "Attribution of the data source is not required. NASK-PIB names and logos may not be used.",
+      "upstream_sources": [],
+      "upstream_labels": [
+        "certpl"
+      ],
+      "upstream_sources_completeness": "documented_complete",
+      "aggregation_dependencies": [],
+      "access_status": "verified-available",
+      "disposition_reason": "terms at https://cert.pl/en/warning-list/ were read on 2026-11-07. The warning list may be used by any user for any purpose, including commercial purposes. Attribution is not required; NASK-PIB names and logos may not be used. All six use-grants are permitted; model_training stays unknown because the page does not address it. Enabled for retrieval/local_storage/enrichment; the derived_output and redistribution grants are present so the free public list (and the paid feed, if the owner enables it) may carry entries supported by CERT Polska.",
+      "privacy_implications": "Records describe scam domains.",
+      "intended_permitted_use": "Any purpose, including commercial.",
+      "coverage_limitations": "Primarily Polish-language scams.",
+      "operational_cost": "free",
+      "intended_operations": [
+        "retrieval",
+        "local_storage",
+        "enrichment"
+      ],
+      "permissions": {
+        "retrieval": {
+          "status": "permitted",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://cert.pl/en/warning-list/",
+                "checked_on": "2026-11-07",
+                "quote": "The Warning List may be used by any user for any purpose, including commercial purposes"
+              }
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "permitted",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://cert.pl/en/warning-list/",
+                "checked_on": "2026-11-07",
+                "quote": "The Warning List may be used by any user for any purpose, including commercial purposes"
+              }
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "permitted",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://cert.pl/en/warning-list/",
+                "checked_on": "2026-11-07",
+                "quote": "The Warning List may be used by any user for any purpose, including commercial purposes"
+              }
+            ]
+          }
+        },
+        "model_training": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "the terms page does not address AI training explicitly; silence is recorded as unknown rather than read as a grant"
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "permitted",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://cert.pl/en/warning-list/",
+                "checked_on": "2026-11-07",
+                "quote": "The Warning List may be used by any user for any purpose, including commercial purposes"
+              }
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "permitted",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://cert.pl/en/warning-list/",
+                "checked_on": "2026-11-07",
+                "quote": "The Warning List may be used by any user for any purpose, including commercial purposes"
+              }
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "permitted",
+          "evidence": {
+            "provider_terms": [
+              {
+                "url": "https://cert.pl/en/warning-list/",
+                "checked_on": "2026-11-07",
+                "quote": "The Warning List may be used by any user for any purpose, including commercial purposes"
+              }
+            ]
+          }
+        }
+      },
+      "enabled": true
+    },
+    {
+      "source_id": "ct-brand-watch",
+      "catalog_ref": "none",
+      "requested_priority": "low",
+      "official_name": "Certificate Transparency brand watch (crt.sh)",
+      "official_documentation": "https://crt.sh/",
+      "verified_on": "unknown",
+      "kind": "enrichment service",
+      "indicator_types": [
+        "domain"
+      ],
+      "classification_meaning": "A certificate whose SAN resembles a protected brand. Signal: `suspicious`, never `harmful` on its own.",
+      "authentication": "none",
+      "quotas": "unknown",
+      "update_cadence": "unknown",
+      "retention": "unknown",
+      "withdrawal_behaviour": "unknown",
+      "attribution_required": "unknown",
+      "derived_data_restrictions": "unknown",
+      "upstream_sources": [],
+      "upstream_sources_completeness": "documented_complete",
+      "aggregation_dependencies": [],
+      "access_status": "unresolved",
+      "disposition_reason": "no terms citation was supplied for crt.sh; every grant stays `unknown` and the source stays disabled. brands.txt is empty, so even an enabled S6 would produce no signals. Owner step: read crt.sh terms, populate brands.txt, flip grants.",
+      "privacy_implications": "Records describe public certificate issuances; brand list is private to this host.",
+      "intended_permitted_use": "Local detection of domain impersonation of owner-listed brands.",
+      "coverage_limitations": "Depends entirely on the brands file. Produces suspicious signals, never block decisions on its own.",
+      "operational_cost": "free",
+      "intended_operations": [],
+      "permissions": {
+        "retrieval": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        },
+        "local_storage": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        },
+        "enrichment": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        },
+        "model_training": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        },
+        "commercial_use": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        },
+        "redistribution": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        },
+        "derived_output": {
+          "status": "unknown",
+          "evidence": {
+            "provider_terms": [],
+            "unresolved_questions": [
+              "no terms citation supplied; cannot assess"
+            ]
+          }
+        }
+      },
+      "enabled": false
+    }
+  ]
+}

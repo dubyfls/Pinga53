@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "scamwall-synthetic",
+  "version": "1",
+  "description": "Synthetic decision fixtures covering the families the normalisation and provenance work has to keep apart. Every value is drawn from a documentation-reserved name (RFC 2606 example.com/.org/.net and subdomains of them, RFC 5737 192.0.2.0/24). No value here corresponds to a real registration, a real report, or a real person.",
+  "provenance": "synthetic",
+  "provenance_note": "Written for this repository by this project. Carries no third-party rights question and no real-world validity: agreement between these labels and this project's own rule is a tautology, not evidence. See docs/EVALUATION_PROTOCOL.md section 3.",
+  "partition": "development",
+  "baseline_id": "empty-list-v1",
+  "baseline_covers": [],
+  "baseline_note": "An empty named list. It is named and pinned, which is what makes `additional` well defined, but it covers nothing, so `additional` here means `proposed at all` rather than `added on top of a household's real lists`. A protocol-conformant study replaces this with the household's actual blocklists, by name and fetch digest.",
+  "unsupported_note": "url, email-address, crypto-address, username, ipv4 and phone-number cases are present and are expected to be reported as unsupported. They are here so that an unimplemented type appears in the results as unimplemented rather than being absent from them.",
+  "cases": [
+    {"id": "ord-001", "type": "domain", "value": "www.example.com", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name; cannot be a real scam", "feed_claim": null},
+    {"id": "ord-002", "type": "domain", "value": "mail.example.org", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-003", "type": "domain", "value": "shop.example.net", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-004", "type": "domain", "value": "news.example.com", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-005", "type": "domain", "value": "docs.example.org", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-006", "type": "domain", "value": "cdn.example.net", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-007", "type": "domain", "value": "api.example.com", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-008", "type": "domain", "value": "static.example.org", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-009", "type": "domain", "value": "images.example.net", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-010", "type": "domain", "value": "support.example.com", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-011", "type": "domain", "value": "blog.example.org", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+    {"id": "ord-012", "type": "domain", "value": "status.example.net", "family": "ordinary-legitimate", "label": "legitimate", "label_basis": "RFC 2606 reserved documentation name", "feed_claim": null},
+
+    {"id": "mal-001", "type": "domain", "value": "secure-login.example.com", "family": "asserted-malicious", "category": "credential-phishing", "label": "malicious", "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "credential-phishing"}},
+    {"id": "mal-002", "type": "domain", "value": "account-verify.example.org", "family": "asserted-malicious", "category": "credential-phishing", "label": "malicious", "label_basis": "fixture stipulation: credential-harvesting page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "credential-phishing"}},
+    {"id": "mal-003", "type": "domain", "value": "parcel-redelivery.example.net", "family": "asserted-malicious", "category": "delivery-scam", "label": "malicious", "label_basis": "fixture stipulation: delivery-fee scam page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "delivery-scam"}},
+    {"id": "mal-004", "type": "domain", "value": "refund-claim.example.com", "family": "asserted-malicious", "category": "refund-scam", "label": "malicious", "label_basis": "fixture stipulation: refund-fee scam page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "refund-scam"}},
+    {"id": "mal-005", "type": "domain", "value": "prize-claim.example.org", "family": "asserted-malicious", "category": "advance-fee", "label": "malicious", "label_basis": "fixture stipulation: advance-fee page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "advance-fee"}},
+    {"id": "mal-006", "type": "domain", "value": "bank-alert.example.net", "family": "asserted-malicious", "category": "credential-phishing", "label": "malicious", "label_basis": "fixture stipulation: credential-harvesting page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "credential-phishing"}},
+    {"id": "mal-007", "type": "domain", "value": "invoice-overdue.example.com", "family": "asserted-malicious", "category": "invoice-scam", "label": "malicious", "label_basis": "fixture stipulation: fraudulent invoice page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "invoice-scam"}},
+    {"id": "mal-008", "type": "domain", "value": "support-desk.example.org", "family": "asserted-malicious", "category": "tech-support-scam", "label": "malicious", "label_basis": "fixture stipulation: tech-support scam page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "tech-support-scam"}},
+    {"id": "mal-009", "type": "domain", "value": "wallet-restore.example.net", "family": "asserted-malicious", "category": "crypto-scam", "label": "malicious", "label_basis": "fixture stipulation: seed-phrase harvesting page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "crypto-scam"}},
+    {"id": "mal-010", "type": "domain", "value": "tax-rebate.example.com", "family": "asserted-malicious", "category": "impersonation", "label": "malicious", "label_basis": "fixture stipulation: government-impersonation page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "impersonation"}},
+    {"id": "mal-011", "type": "domain", "value": "delivery-fee.example.org", "family": "asserted-malicious", "category": "delivery-scam", "label": "malicious", "label_basis": "fixture stipulation: delivery-fee scam page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "delivery-scam"}},
+    {"id": "mal-012", "type": "domain", "value": "signin-alert.example.net", "family": "asserted-malicious", "category": "credential-phishing", "label": "malicious", "label_basis": "fixture stipulation: credential-harvesting page observed directly", "feed_claim": {"action": "block", "confidence": "high", "category": "credential-phishing"}},
+
+    {"id": "lowconf-001", "type": "domain", "value": "maybe-bad.example.com", "family": "feed-says-low-confidence", "label": "unknown", "label_basis": "no qualifying labeller would adjudicate; the publisher itself is not confident", "feed_claim": {"action": "block", "confidence": "low"}},
+    {"id": "lowconf-002", "type": "domain", "value": "perhaps.example.org", "family": "feed-says-low-confidence", "label": "unknown", "label_basis": "no qualifying labeller would adjudicate", "feed_claim": {"action": "block", "confidence": "medium"}},
+    {"id": "allow-001", "type": "domain", "value": "allowlisted.example.net", "family": "feed-says-allow", "label": "legitimate", "label_basis": "fixture stipulation: the publisher explicitly allows it", "feed_claim": {"action": "allow", "confidence": "high"}},
+
+    {"id": "invis-001", "type": "domain", "value": "secure​login.example.com", "family": "invisible-character", "category": "credential-phishing", "label": "unknown", "label_basis": "the written form is not the canonical form; no labeller can adjudicate a name whose identity is ambiguous", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "invis-002", "type": "domain", "value": "www.ex­ample.com", "family": "invisible-character", "label": "legitimate", "label_basis": "canonicalises onto www.example.com, an RFC 2606 reserved name; proposing it would block the legitimate name", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "invis-003", "type": "domain", "value": "mail.ex﻿ample.org", "family": "invisible-character", "label": "legitimate", "label_basis": "canonicalises onto mail.example.org, a reserved name", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "invis-004", "type": "domain", "value": "shop.ex⁠ample.net", "family": "invisible-character", "label": "legitimate", "label_basis": "canonicalises onto shop.example.net, a reserved name", "feed_claim": {"action": "block", "confidence": "high"}},
+
+    {"id": "mixed-001", "type": "domain", "value": "pаypal-ish.example.com", "family": "mixed-script", "label": "unknown", "label_basis": "a Cyrillic character inside a Latin word; notable, and not by itself evidence of anything", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "mixed-002", "type": "domain", "value": "аpple-ish.example.org", "family": "mixed-script", "label": "unknown", "label_basis": "mixed script; notable and not adjudicable from the name alone", "feed_claim": {"action": "block", "confidence": "high"}},
+
+    {"id": "intl-001", "type": "domain", "value": "münchen.example.com", "family": "internationalised-legitimate", "label": "legitimate", "label_basis": "an ordinary internationalised name under a reserved domain; most of the internationalised internet is legitimate", "feed_claim": null},
+    {"id": "intl-002", "type": "domain", "value": "xn--mnchen-3ya.example.com", "family": "internationalised-legitimate", "label": "legitimate", "label_basis": "the punycode spelling of intl-001; the same name written the other way", "feed_claim": null},
+    {"id": "intl-003", "type": "domain", "value": "日本語.example.org", "family": "internationalised-legitimate", "label": "legitimate", "label_basis": "a single-script non-Latin name; ordinary", "feed_claim": null},
+    {"id": "intl-004", "type": "domain", "value": "xn--wgv71a119e.example.org", "family": "internationalised-legitimate", "label": "legitimate", "label_basis": "the punycode spelling of intl-003", "feed_claim": null},
+
+    {"id": "susp-001", "type": "domain", "value": "login-secure-verify-account.example.com", "family": "suspicious-looking-legitimate", "label": "legitimate", "label_basis": "fixture stipulation: a long hyphenated name that looks like phishing and is not; shape is not evidence", "feed_claim": null},
+    {"id": "susp-002", "type": "domain", "value": "xn--80ak6aa92e.example.net", "family": "suspicious-looking-legitimate", "label": "legitimate", "label_basis": "a whole-script name that resembles a Latin word; the known undetected class, stipulated legitimate here so that treating the shape as evidence shows up as a false positive", "feed_claim": null},
+    {"id": "susp-003", "type": "domain", "value": "update-now.example.org", "family": "suspicious-looking-legitimate", "label": "legitimate", "label_basis": "fixture stipulation: alarming wording, legitimate name", "feed_claim": null},
+
+    {"id": "local-001", "type": "domain", "value": "pihole.local", "family": "local-and-appliance", "label": "legitimate", "label_basis": "a link-local appliance name; blocking it would break local service discovery", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "local-002", "type": "domain", "value": "router.home", "family": "local-and-appliance", "label": "legitimate", "label_basis": "an internal TLD; never a public internet name", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "local-003", "type": "domain", "value": "nas.internal", "family": "local-and-appliance", "label": "legitimate", "label_basis": "an internal TLD", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "local-004", "type": "domain", "value": "localhost", "family": "local-and-appliance", "label": "legitimate", "label_basis": "the loopback name", "feed_claim": {"action": "block", "confidence": "high"}},
+
+    {"id": "inval-001", "type": "domain", "value": "not a domain", "family": "syntactically-invalid", "label": "unknown", "label_basis": "not a domain at all; nothing to adjudicate", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "inval-002", "type": "domain", "value": "192.0.2.1", "family": "syntactically-invalid", "label": "unknown", "label_basis": "an RFC 5737 documentation address written where a domain was expected", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "inval-003", "type": "domain", "value": "*.example.com", "family": "syntactically-invalid", "label": "unknown", "label_basis": "a wildcard; a widening of scope, never a narrowing", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "inval-004", "type": "domain", "value": "https://www.example.com/path", "family": "syntactically-invalid", "label": "unknown", "label_basis": "URL syntax written where a bare domain was expected; a schema violation", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "inval-005", "type": "domain", "value": "co.uk", "family": "syntactically-invalid", "label": "unknown", "label_basis": "a public suffix, not a site", "feed_claim": {"action": "block", "confidence": "high"}},
+    {"id": "inval-006", "type": "domain", "value": "user@www.example.com", "family": "syntactically-invalid", "label": "unknown", "label_basis": "an address written where a domain was expected", "feed_claim": {"action": "block", "confidence": "high"}},
+
+    {"id": "corr-001", "type": "domain", "value": "corroborated-1.example.com", "family": "corroborated-independent", "category": "credential-phishing", "label": "malicious", "label_basis": "fixture stipulation: credential-harvesting page observed directly", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-B", "classification": "malicious", "state": "active"}
+      ]},
+    {"id": "corr-002", "type": "domain", "value": "corroborated-2.example.org", "family": "corroborated-independent", "category": "delivery-scam", "label": "malicious", "label_basis": "fixture stipulation: delivery-fee scam page observed directly", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-B", "classification": "malicious", "state": "active"}
+      ]},
+    {"id": "corr-003", "type": "domain", "value": "single-source.example.net", "family": "single-source", "label": "unknown", "label_basis": "one source, no corroboration; no qualifying labeller would adjudicate", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active"}
+      ]},
+    {"id": "corr-004", "type": "domain", "value": "repeated-one-source.example.com", "family": "repeated-one-source", "label": "legitimate", "label_basis": "fixture stipulation: legitimate, reported repeatedly by one noisy source; counting the repeats as corroboration is the inflation this family exists to catch", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "source_record_id": "r1", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-A", "source_record_id": "r2", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-A", "source_record_id": "r3", "classification": "malicious", "state": "active"}
+      ]},
+    {"id": "corr-005", "type": "domain", "value": "aggregator-and-upstream.example.org", "family": "aggregator-and-upstream", "label": "legitimate", "label_basis": "fixture stipulation: legitimate; an aggregator and the feed it copies are one observation, and counting them as two is the inflation this family exists to catch", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-AGG", "classification": "malicious", "state": "active"}
+      ]},
+    {"id": "corr-006", "type": "domain", "value": "unknown-lineage.example.net", "family": "unknown-lineage", "label": "legitimate", "label_basis": "fixture stipulation: legitimate; two sources whose upstreams nobody has documented are not demonstrated independent", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-U1", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-U2", "classification": "malicious", "state": "active"}
+      ]},
+    {"id": "corr-007", "type": "domain", "value": "conflicting.example.com", "family": "conflicting-classification", "label": "unknown", "label_basis": "two sources disagree; the disagreement is retained rather than resolved, and no label is claimed", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-B", "classification": "benign", "state": "active"}
+      ]},
+    {"id": "corr-008", "type": "domain", "value": "lapsed.example.org", "family": "expired-evidence", "label": "legitimate", "label_basis": "fixture stipulation: legitimate; the only adverse observation lapsed before the evaluation instant", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active", "expires_at": "2026-01-01T00:00:00Z"},
+        {"source_id": "eval-src-B", "classification": "malicious", "state": "active", "expires_at": "2026-02-01T00:00:00Z"}
+      ]},
+    {"id": "corr-009", "type": "domain", "value": "withdrawn.example.net", "family": "withdrawn-evidence", "label": "legitimate", "label_basis": "fixture stipulation: legitimate; both sources withdrew their reports", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-A", "classification": "malicious", "state": "active", "status": "withdrawn"},
+        {"source_id": "eval-src-B", "classification": "malicious", "state": "active", "status": "withdrawn"}
+      ]},
+    {"id": "corr-010", "type": "domain", "value": "unresolvable-source.example.com", "family": "unresolvable-source", "label": "legitimate", "label_basis": "fixture stipulation: legitimate; the reporting ids do not resolve in the registry and cannot attribute anything", "feed_claim": {"action": "block", "confidence": "high"},
+      "observations": [
+        {"source_id": "eval-src-NOPE-1", "classification": "malicious", "state": "active"},
+        {"source_id": "eval-src-NOPE-2", "classification": "malicious", "state": "active"}
+      ]},
+
+    {"id": "unsup-001", "type": "url", "value": "https://www.example.com/a?b=c", "family": "unsupported-type", "label": "unknown", "label_basis": "URL canonicalisation is not implemented; this case exists so the gap appears in the results", "feed_claim": null},
+    {"id": "unsup-002", "type": "url", "value": "https://www.example.com:8443/a", "family": "unsupported-type", "label": "unknown", "label_basis": "differs from unsup-001 only in port and path, which a URL canonicaliser would have to preserve; not implemented", "feed_claim": null},
+    {"id": "unsup-003", "type": "email-address", "value": "someone@www.example.com", "family": "unsupported-type", "label": "unknown", "label_basis": "e-mail canonicalisation is not implemented", "feed_claim": null},
+    {"id": "unsup-004", "type": "disposable-email-domain", "value": "mailbox.example.net", "family": "unsupported-type", "label": "unknown", "label_basis": "e-mail-domain canonicalisation is not implemented; it must not be done by normalising a whole address as a domain", "feed_claim": null},
+    {"id": "unsup-005", "type": "username", "value": "192.0.2.1", "family": "unsupported-type", "label": "unknown", "label_basis": "an address-shaped string reported as a username; unsupported, which is a different fact from invalid", "feed_claim": null},
+    {"id": "unsup-006", "type": "ipv4", "value": "192.0.2.1", "family": "unsupported-type", "label": "unknown", "label_basis": "RFC 5737 documentation address; IPv4 canonicalisation is not implemented", "feed_claim": null},
+    {"id": "unsup-007", "type": "crypto-address", "value": "example-not-a-real-address", "family": "unsupported-type", "label": "unknown", "label_basis": "deliberately not a real address shape; crypto-address canonicalisation is not implemented", "feed_claim": null},
+    {"id": "unsup-008", "type": "phone-number", "value": "+44 1632 960000", "family": "unsupported-type", "label": "unknown", "label_basis": "Ofcom drama-reserved range; phone-number canonicalisation is not implemented", "feed_claim": null}
+  ]
+}

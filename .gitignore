@@ -1,0 +1,15 @@
+# build output
+/engine/scamwall
+/engine/scamwall.bin
+*.test
+*.out
+# never commit keys or secrets
+*.key
+*.seed
+secrets/
+.env
+# editors and OS
+.DS_Store
+*.swp
+.idea/
+.vscode/

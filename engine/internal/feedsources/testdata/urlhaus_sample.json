@@ -1,0 +1,41 @@
+{
+  "query_status": "ok",
+  "urls": [
+    {
+      "id": "3123456",
+      "url": "http://evil.example.com/path/payload.exe",
+      "host": "evil.example.com",
+      "url_status": "online",
+      "threat": "malware_download",
+      "tags": ["exe", "emotet"],
+      "date_added": "2026-11-07 10:12:00 UTC"
+    },
+    {
+      "id": "3123457",
+      "url": "http://192.0.2.5/payload",
+      "host": "192.0.2.5",
+      "url_status": "online",
+      "threat": "malware_download",
+      "tags": [],
+      "date_added": "2026-11-07 10:13:00 UTC"
+    },
+    {
+      "id": "3123458",
+      "url": "http://otherevil.example.net/bin",
+      "host": "otherevil.example.net",
+      "url_status": "offline",
+      "threat": "malware_download",
+      "tags": ["exe"],
+      "date_added": "2026-11-05 09:00:00 UTC"
+    },
+    {
+      "id": "3123459",
+      "url": "http://ANOTHER.Evil.example.COM/x",
+      "host": "ANOTHER.Evil.example.COM",
+      "url_status": "online",
+      "threat": "malware_download",
+      "tags": [],
+      "date_added": "2026-11-07 10:14:00 UTC"
+    }
+  ]
+}

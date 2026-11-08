@@ -1,0 +1,16 @@
+[Unit]
+Description=Run Pinga53 ScamWall hourly
+
+[Timer]
+# Hourly on the top of the hour. Persistent so a missed run (host was down)
+# catches up on next boot rather than silently skipping.
+OnCalendar=hourly
+Persistent=yes
+# Randomise inside a 5-minute window so a fleet of Pinga53 hosts does not
+# hit the same feed URL at the same second.
+RandomizedDelaySec=5min
+AccuracySec=1min
+Unit=scamwall-run.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,49 @@
+# protected.txt — hosts/suffixes ScamWall must never write into an RPZ zone.
+#
+# One suffix per line. Blank lines and '#'-comments are ignored.
+#
+# Whole-label match: a line `example.com` covers `example.com` and
+# `anything.example.com`, but NOT `notexample.com`. Case-insensitive.
+#
+# Two kinds of entries belong here:
+#
+#   1. Hosts the household can never reach without ScamWall's own feeds.
+#      These are the OfficialDocumentation hostnames the registered
+#      sources carry — `scamwall check --registry … --protected this-file`
+#      fails until every registered source URL's host is covered.
+#
+#   2. The owner's own protected set — bank domains, utility providers,
+#      employer resources, etc. (See DESIGN_LEDGER INT-002: deriving the
+#      household's brand set from Pi-hole query logs is an owner-approved
+#      step, not an automatic one.)
+#
+# Seeds below are the feed hosts the registered sources at
+# scamwall/docs/source-registry.json currently cite. Update together with
+# the registry; the check will refuse to pass otherwise.
+
+# category 1 — ScamWall feed sources
+abuse.ch
+phishtank.org
+openphish.com
+openrdap.org
+publicsuffix.org
+# ORDER 17 additions
+threatfox-api.abuse.ch
+raw.githubusercontent.com
+githubusercontent.com
+mitchellkrogza.github.io
+cert.pl
+hole.cert.pl
+crt.sh
+
+# category 2 — owner's protected set
+#
+# O-4 answered 2026-10-01: start empty, owner adds category-2 entries
+# directly on .2 BEFORE running deploy/enforce-scamwall.sh. The
+# enforce script runs `scamwall check` first and refuses to flip from
+# shadow to enforce until at least one category-2 entry is present
+# below this header.
+#
+# Add bank, payroll, government and employer domains the household
+# actively uses, one per line. Whole-label suffix match (same semantics
+# as the feed hosts above).

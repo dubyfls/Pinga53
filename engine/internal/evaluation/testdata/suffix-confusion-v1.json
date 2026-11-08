@@ -1,0 +1,758 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "scamwall-suffix-confusion",
+  "version": "1",
+  "description": "Synthetic matching fixtures: sibling pairs whose names differ only in a prefix, so that a rule matching by string suffix rather than by DNS label proposes the legitimate one. Every value is a subdomain of an RFC 2606 documentation-reserved name and resolves to nothing.",
+  "provenance": "synthetic",
+  "provenance_note": "Written for this repository by this project, for ORDER 6 Stage G. Carries no third-party rights question and no real-world validity: agreement between these labels and this project's own rule is a tautology, not evidence. See docs/EVALUATION_PROTOCOL.md section 3.",
+  "partition": "development",
+  "baseline_id": "empty-list-v1",
+  "baseline_covers": [],
+  "baseline_note": "An empty named list, as in the main set. `additional` here means `proposed at all` rather than `added on top of a household's real lists`.",
+  "cases": [
+    {
+      "id": "sfx-bad-01",
+      "type": "domain",
+      "value": "bad-01.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-01",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-01",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-01",
+      "type": "domain",
+      "value": "notbad-01.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-01",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-01",
+      "type": "domain",
+      "value": "login.bad-01.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-01",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-01",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-02",
+      "type": "domain",
+      "value": "bad-02.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-02",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-02",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-02",
+      "type": "domain",
+      "value": "notbad-02.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-02",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-02",
+      "type": "domain",
+      "value": "login.bad-02.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-02",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-02",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-03",
+      "type": "domain",
+      "value": "bad-03.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-03",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-03",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-03",
+      "type": "domain",
+      "value": "notbad-03.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-03",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-03",
+      "type": "domain",
+      "value": "login.bad-03.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-03",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-03",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-04",
+      "type": "domain",
+      "value": "bad-04.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-04",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-04",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-04",
+      "type": "domain",
+      "value": "notbad-04.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-04",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-04",
+      "type": "domain",
+      "value": "login.bad-04.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-04",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-04",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-05",
+      "type": "domain",
+      "value": "bad-05.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-05",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-05",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-05",
+      "type": "domain",
+      "value": "notbad-05.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-05",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-05",
+      "type": "domain",
+      "value": "login.bad-05.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-05",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-05",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-06",
+      "type": "domain",
+      "value": "bad-06.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-06",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-06",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-06",
+      "type": "domain",
+      "value": "notbad-06.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-06",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-06",
+      "type": "domain",
+      "value": "login.bad-06.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-06",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-06",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-07",
+      "type": "domain",
+      "value": "bad-07.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-07",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-07",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-07",
+      "type": "domain",
+      "value": "notbad-07.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-07",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-07",
+      "type": "domain",
+      "value": "login.bad-07.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-07",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-07",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-08",
+      "type": "domain",
+      "value": "bad-08.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-08",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-08",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-08",
+      "type": "domain",
+      "value": "notbad-08.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-08",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-08",
+      "type": "domain",
+      "value": "login.bad-08.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-08",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-08",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-09",
+      "type": "domain",
+      "value": "bad-09.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-09",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-09",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-09",
+      "type": "domain",
+      "value": "notbad-09.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-09",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-09",
+      "type": "domain",
+      "value": "login.bad-09.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-09",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-09",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-10",
+      "type": "domain",
+      "value": "bad-10.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-10",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-10",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-10",
+      "type": "domain",
+      "value": "notbad-10.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-10",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-10",
+      "type": "domain",
+      "value": "login.bad-10.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-10",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-10",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-11",
+      "type": "domain",
+      "value": "bad-11.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-11",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-11",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-11",
+      "type": "domain",
+      "value": "notbad-11.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-11",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-11",
+      "type": "domain",
+      "value": "login.bad-11.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-11",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-11",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-bad-12",
+      "type": "domain",
+      "value": "bad-12.example.com",
+      "family": "suffix-confusion",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: stands for a credential-harvesting page observed directly",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-bad-12",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-bad-12",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-sibling-12",
+      "type": "domain",
+      "value": "notbad-12.example.com",
+      "family": "suffix-confusion",
+      "label": "legitimate",
+      "label_basis": "fixture stipulation: an unrelated registration whose name merely ENDS WITH a listed one; RFC 2606 reserved",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-ok-12",
+          "classification": "benign",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "id": "sfx-child-12",
+      "type": "domain",
+      "value": "login.bad-12.example.com",
+      "family": "suffix-confusion-child",
+      "category": "credential-phishing",
+      "label": "malicious",
+      "label_basis": "fixture stipulation: a child of a listed name, serving the same page",
+      "observations": [
+        {
+          "source_id": "eval-src-A",
+          "source_record_id": "A-child-12",
+          "classification": "malicious",
+          "state": "active"
+        },
+        {
+          "source_id": "eval-src-B",
+          "source_record_id": "B-child-12",
+          "classification": "malicious",
+          "state": "active"
+        }
+      ]
+    }
+  ]
+}

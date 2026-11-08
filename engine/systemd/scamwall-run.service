@@ -1,0 +1,65 @@
+[Unit]
+Description=Pinga53 ScamWall — fetch, decide, write RPZ zone
+Documentation=file:///opt/pinga53/scamwall/docs/orders/ORDER_12_PROGRESS.md
+# ScamWall parses feeds from the network; the resolver on this host is what
+# it uses for name resolution. Wants= is deliberately weaker than Requires:
+# an Unbound restart schedules ScamWall for the next cycle, not the current
+# one.
+Wants=network-online.target unbound.service
+After=network-online.target unbound.service
+
+[Service]
+Type=oneshot
+User=scamwall
+Group=scamwall
+
+# scamwall-run: acquire feeds → sign evidence → translate allowlist →
+# write RPZ zone + sha256. The pipeline is complex (six required inputs,
+# two incompatible snapshot formats, a mandatory signed-evidence step), so
+# it is kept in a single shell shim rather than inlined here. See the
+# shim's header for the per-phase contract and exit-code policy.
+#
+# The ExecStartPre reads only files that are hand-provisioned by
+# deploy-scamwall.sh and never written by this unit; the shim is the only
+# ExecStart. There is no separate ExecStartPost: the sha256 companion is
+# computed inside the shim, next to the zone it describes, so the two
+# always share a single success boundary.
+WorkingDirectory=/var/lib/scamwall
+ExecStart=/usr/local/sbin/scamwall-run
+
+# Resource limits, per the order's "Protect the resolver" principle. A
+# ScamWall run must never starve Unbound, which shares this box.
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=1G
+
+# Hardening. These are the order's explicit requirements plus the standard
+# systemd(5) options that make ProtectSystem meaningful.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+PrivateTmp=yes
+PrivateDevices=yes
+# scamwall reaches the network via https:// only; it never listens.
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+# The one directory the unit may write to.
+ReadWritePaths=/var/lib/scamwall
+
+# Rate the exit codes so systemd's journal makes the failure category
+# obvious: scamwall's CLI already reserves 0..5 (see cmd/scamwall/rpz.go).
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

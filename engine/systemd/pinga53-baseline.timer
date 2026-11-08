@@ -1,0 +1,15 @@
+[Unit]
+Description=Daily Pinga53 ScamWall baseline snapshot
+
+[Timer]
+# Once per day, shortly after midnight UTC. Persistent so a missed run
+# (host was down) catches up on next boot — `scamwall metrics` reads a
+# directory of per-day files and needs them present, not fresh.
+OnCalendar=*-*-* 00:17:00
+Persistent=yes
+RandomizedDelaySec=5min
+AccuracySec=1min
+Unit=pinga53-baseline.service
+
+[Install]
+WantedBy=timers.target

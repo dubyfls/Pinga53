@@ -1,0 +1,8 @@
+http://phish1.example.com/login
+https://phish2.example.net/update-account
+# a comment
+https://phish3.example.org
+http://192.0.2.5/x
+not-a-url-at-all
+https://PHISH4.Example.COM/signin
+https://phish1.example.com/login

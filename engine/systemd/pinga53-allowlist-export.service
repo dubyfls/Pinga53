@@ -1,0 +1,47 @@
+[Unit]
+Description=Pinga53 — export Pi-hole allow entries for ScamWall
+Documentation=file:///opt/pinga53/scamwall/scripts/pinga53-allowlist-export.py
+# Pi-hole FTL must be up so a concurrent `pihole -g` run does not race
+# this exporter's read. Wants is sufficient — the exporter uses
+# ?mode=ro&immutable=1 and does not lock.
+Wants=network.target pihole-FTL.service
+After=network.target pihole-FTL.service
+
+[Service]
+Type=oneshot
+User=scamwall
+Group=scamwall
+
+# Python stdlib only — no venv, no binary wrapper.
+ExecStart=/usr/bin/python3 /opt/pinga53/scamwall/scripts/pinga53-allowlist-export.py
+
+# Resource limits — same as scamwall-run, per the order.
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=1G
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+# The DB is read-only via the URI; /etc/pihole stays out of ReadWritePaths.
+ReadOnlyPaths=/etc/pihole
+ReadWritePaths=/var/lib/scamwall
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+scam1.example.pl
+scam2.example.pl
+# comment should skip
+.example.pl
+SCAM3.Example.PL

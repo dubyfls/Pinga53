@@ -1,0 +1,15 @@
+[Unit]
+Description=Install Pinga53 ScamWall RPZ zone hourly, 20 min after scamwall-run
+
+[Timer]
+# The order asks for "20 min after scamwall-run": run at :20 past each
+# hour, which is 20 min after scamwall-run.timer's OnCalendar=hourly (top
+# of the hour).
+OnCalendar=*:20
+Persistent=yes
+RandomizedDelaySec=1min
+AccuracySec=1min
+Unit=pinga53-scamwall-zone-install.service
+
+[Install]
+WantedBy=timers.target

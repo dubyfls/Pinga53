@@ -1,0 +1,11 @@
+; ScamWall RPZ zone - generated, do not edit by hand.
+; Exact hosts only; no wildcards. Whether a block should reach subdomains is
+; an owner decision and this build does not take it.
+; Each entry carries a short decision-digest prefix and nothing else.
+$ORIGIN scamwall.rpz.
+$TTL 60
+@ IN SOA localhost. hostmaster.scamwall.rpz. ( 2026092501 3600 600 604800 60 )
+@ IN NS localhost.
+alpha.example.net IN CNAME . ; d=aa6633228a39
+bravo.example.net IN CNAME . ; d=07cb468baf42
+evil.example.com IN CNAME . ; d=497cb114587a

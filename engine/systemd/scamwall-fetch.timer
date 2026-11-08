@@ -1,0 +1,16 @@
+[Unit]
+Description=Run Pinga53 ScamWall fetchers every 30 minutes
+
+[Timer]
+# Every 30 minutes. Persistent so a missed run (host was down) catches
+# up on next boot. Randomised inside a 3-minute window so a fleet of
+# Pinga53 hosts does not hit abuse.ch / openphish / crt.sh at the same
+# second.
+OnCalendar=*:0/30
+Persistent=yes
+RandomizedDelaySec=3min
+AccuracySec=30sec
+Unit=scamwall-fetch.service
+
+[Install]
+WantedBy=timers.target

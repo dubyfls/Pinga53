@@ -1,0 +1,63 @@
+[Unit]
+Description=Pinga53 ScamWall — daily gate measurement
+Documentation=file:///opt/pinga53/scamwall/docs/orders/ORDER_17_PROGRESS.md
+Wants=network.target
+After=network.target scamwall-run.service
+
+[Service]
+Type=oneshot
+User=scamwall
+Group=scamwall
+
+# scamwall metrics reads local inputs only. It does not reach the network:
+# the baseline snapshots of the free stack must be collected by a separate
+# step (operator-run; see docs/orders/ORDER_17_HANDOFF.md). This unit only
+# reads what is already on disk and writes
+# /var/lib/scamwall/metrics/<date>.json + summary.json.
+#
+# Journal collection: a short pre-step tails Unbound's `rpz: applied
+# [scamwall]` lines for today into /var/lib/scamwall/journal/<date>.log.
+# Done in-process by this unit so there is one audit boundary rather
+# than a second script.
+ExecStartPre=/bin/sh -c 'd=$(date -u +%%F); journal_dir=/var/lib/scamwall/journal; mkdir -p "$journal_dir"; journalctl -u unbound.service --since "$d 00:00" --no-pager --output=short-iso 2>/dev/null | grep "rpz: applied \\[scamwall\\]" >"$journal_dir/$d.log" || true'
+
+ExecStart=/bin/sh -c 'd=$(date -u +%%F); /usr/local/bin/scamwall metrics \
+  --shadow-zone /etc/unbound/rpz/scamwall.zone \
+  --unbound-rpz /etc/unbound/rpz \
+  --journal "/var/lib/scamwall/journal/$d.log" \
+  --allowlist /var/lib/scamwall/allowlist.json \
+  --protected /etc/pinga53/scamwall/protected.txt \
+  --baseline-dir /var/lib/scamwall/baseline \
+  --records-dir /var/lib/scamwall/records \
+  --out-dir /var/lib/scamwall/metrics'
+
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=1G
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+ReadOnlyPaths=/etc/pinga53/scamwall /etc/unbound/rpz
+ReadWritePaths=/var/lib/scamwall
+
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

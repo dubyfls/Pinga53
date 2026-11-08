@@ -1,0 +1,40 @@
+{
+  "query_status": "ok",
+  "data": [
+    {
+      "id": "11223344",
+      "ioc": "evil.example.net",
+      "ioc_type": "domain",
+      "threat_type": "payload_delivery",
+      "malware": "emotet",
+      "confidence_level": 75,
+      "first_seen": "2026-11-01 12:00:00 UTC",
+      "last_seen": "2026-11-07 09:00:00 UTC"
+    },
+    {
+      "id": "11223345",
+      "ioc": "https://phish.example.org/path",
+      "ioc_type": "url",
+      "threat_type": "credential_phishing",
+      "malware": "unknown",
+      "confidence_level": 40,
+      "first_seen": "2026-11-03 10:00:00 UTC"
+    },
+    {
+      "id": "11223346",
+      "ioc": "203.0.113.17",
+      "ioc_type": "ip:port",
+      "threat_type": "payload_delivery",
+      "malware": "trickbot",
+      "confidence_level": 80
+    },
+    {
+      "id": "11223347",
+      "ioc": "deadbeefcafe0123deadbeefcafe0123",
+      "ioc_type": "md5_hash",
+      "threat_type": "payload_delivery",
+      "malware": "emotet",
+      "confidence_level": 70
+    }
+  ]
+}

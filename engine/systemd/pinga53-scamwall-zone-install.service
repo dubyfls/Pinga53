@@ -1,0 +1,51 @@
+[Unit]
+Description=Pinga53 — validate + install ScamWall RPZ zone into Unbound
+Documentation=file:///opt/pinga53/scamwall/scripts/pinga53-scamwall-zone-install.sh
+# The installer reloads Unbound at the end, so Unbound must be up.
+Wants=unbound.service
+After=unbound.service scamwall-run.service
+
+[Service]
+Type=oneshot
+# Runs as root: the installer writes to /etc/unbound/rpz, chowns to
+# unbound:unbound, and reloads via unbound-control (usually a Unix-domain
+# socket owned by unbound:unbound with tight ACLs). See the order §4.
+User=root
+Group=root
+
+ExecStart=/usr/local/sbin/pinga53-scamwall-zone-install.sh
+
+# Resource limits — root but nice/idle so the reload does not compete
+# with resolver load.
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=1G
+
+# Root but hardened. NoNewPrivileges + no @privileged filter keeps the
+# installer from escalating further, and ProtectSystem=strict with the
+# minimal ReadWritePaths list below keeps it from writing anywhere it is
+# not documented to.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+PrivateTmp=yes
+PrivateDevices=yes
+RestrictAddressFamilies=AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+ReadOnlyPaths=/var/lib/scamwall
+ReadWritePaths=/etc/unbound/rpz /var/log/pinga53
+
+[Install]
+WantedBy=multi-user.target

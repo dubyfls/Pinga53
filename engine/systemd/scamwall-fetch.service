@@ -1,0 +1,72 @@
+[Unit]
+Description=Pinga53 ScamWall — fetch per-source records
+Documentation=file:///opt/pinga53/scamwall/docs/orders/ORDER_17_PROGRESS.md
+# Provider hosts (as of ORDER 17):
+#   urlhaus.abuse.ch
+#   threatfox-api.abuse.ch
+#   openphish.com
+#   raw.githubusercontent.com
+#   hole.cert.pl
+#   crt.sh
+# These are the only hosts the fetcher is expected to contact. The unit
+# does not sandbox DNS, so an operator can add or remove providers by
+# editing registry.json — this comment is the record of what the unit
+# AS SHIPPED is designed to reach.
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=scamwall
+Group=scamwall
+
+# scamwall fetch reads the deployed registry, runs every enabled source's
+# fetcher, writes per-source records files atomically into
+# /var/lib/scamwall/records, and refuses retrieval against sources whose
+# recorded rights say so. One failing source does not fail the service
+# (the binary's own exit code 1 is reserved for "every fetch failed"); a
+# scraped-but-unparseable response leaves the previous records file in
+# place.
+ExecStart=/usr/local/bin/scamwall fetch \
+  --registry /etc/pinga53/scamwall/registry.json \
+  --out-dir /var/lib/scamwall/records \
+  --secrets-dir /etc/pinga53/scamwall/secrets \
+  --cache-dir /var/lib/scamwall/cache \
+  --timeout 30s
+
+Nice=19
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryMax=1G
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+PrivateTmp=yes
+PrivateDevices=yes
+# Outbound TCP over AF_INET/INET6 to the providers; AF_UNIX for syslog.
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+# The unit writes to records + cache under /var/lib/scamwall; the registry
+# and secrets are ReadOnly.
+ReadOnlyPaths=/etc/pinga53/scamwall
+ReadWritePaths=/var/lib/scamwall
+
+# scamwall fetch returns 0 only when every enabled fetcher succeeded;
+# treat 1 as a transient "look at the journal" failure (systemd marks the
+# unit failed) rather than SuccessExitStatus=.
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

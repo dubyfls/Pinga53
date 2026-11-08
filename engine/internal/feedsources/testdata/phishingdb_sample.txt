@@ -1,0 +1,7 @@
+# Phishing.Database active phishing domains (fixture)
+brand-support-signin.net
+customersupport-login.example.net
+# bad entry below:
+localhost
+secure-update.example.org
+brand-support-signin.net

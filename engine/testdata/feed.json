@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "signature": {
+    "algorithm": "ed25519",
+    "key_id": "scamwall-test-key-1",
+    "value": "z1Hp7Yyq/63eYTGNJCxS/VvhSCTDvp2MyolU+/Ia8fdauO6FtgPyJK9dLXccg5fQerZrs0oM0YptShJEf7jkDw=="
+  },
+  "payload": {"manifest_version":"1.0","feed_id":"scamwall-test-feed","issued_at":"2026-09-01T00:00:00Z","expires_at":"2035-01-01T00:00:00Z","records":[{"domain":"secure-verify-login.example.com","action":"block","confidence":"high","category":"phishing"},{"domain":"account-update-required.example.net","action":"block","confidence":"high","category":"phishing"},{"domain":"Prize-Claim.EXAMPLE.ORG","action":"block","confidence":"high","category":"advance-fee-fraud"},{"domain":"münchen-sparkasse.example.net","action":"block","confidence":"high","category":"phishing"},{"domain":"refund-portal.example.com.","action":"block","confidence":"high","category":"refund-scam"},{"domain":"maybe-suspicious.example.net","action":"block","confidence":"medium","category":"unverified"},{"domain":"known-good.example.org","action":"allow","confidence":"high","category":"allowlist"},{"domain":"expired-campaign.example.com","action":"block","confidence":"high","category":"phishing","expires_at":"2026-01-01T00:00:00Z"}]}
+}

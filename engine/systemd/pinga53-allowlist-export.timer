@@ -1,0 +1,12 @@
+[Unit]
+Description=Export the household's Pi-hole allow entries every 15 min
+
+[Timer]
+OnCalendar=*:0/15
+Persistent=yes
+RandomizedDelaySec=30s
+AccuracySec=15s
+Unit=pinga53-allowlist-export.service
+
+[Install]
+WantedBy=timers.target

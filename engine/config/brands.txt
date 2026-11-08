@@ -1,0 +1,17 @@
+# brands.txt — one brand per line. Case-insensitive, whole-token match.
+#
+# The ct-brand-watch source (S6) reads this file and queries crt.sh for every
+# brand listed. The output is a `suspicious` signal, never a `harmful` one:
+# a certificate transparency entry is EVIDENCE that a certificate was issued
+# for a name that contains the brand string, nothing more.
+#
+# Default is empty: S6 is effectively DISABLED until a brand is listed below.
+# Add the brand's second-level label only (no TLD): `chase`, not `chase.com`.
+#
+# Brands should also appear in protected.txt (with the TLD) so the brand's
+# own site is never written into an RPZ zone — the two files are different
+# questions (what to watch for; what to never block) and need both answers.
+#
+# Example (not active; comment it out):
+# chase
+# wellsfargo
