@@ -134,7 +134,7 @@ class ScamWallReader:
         except Exception:
             return {"sources": []}
         for name in entries:
-            if not name.endswith(".json"):
+            if not name.endswith(".json") or name.startswith("_"):
                 continue
             body = self._safe_read_json(os.path.join(rec_dir, name))
             if not body:

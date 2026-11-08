@@ -106,10 +106,11 @@ class DaemonRefusesIfNoUsers(unittest.TestCase):
         from backend.main import _refuse_if_no_users
         from backend.config import Config
         cfg = Config(
-            bind_host="127.0.0.1", bind_port=8052, config_dir="/tmp",
-            db_url=f"sqlite:///{self.db_path}", audit_log="/tmp/a.jsonl",
-            secret_key="x" * 32, cors_origins=[], pihole_ftl_db="/tmp/x",
-            unbound_port=5335, require_mfa=True,
+            bind_host="127.0.0.1", bind_port=8053, config_dir="/tmp",
+            state_dir="/tmp", db_url=f"sqlite:///{self.db_path}",
+            audit_log="/tmp/a.jsonl", secret_key="x" * 32, cors_origins=[],
+            pihole_ftl_db="/tmp/x", pihole_api="https://127.0.0.1/api",
+            pihole_app_password="", pihole_admin_url="/admin", require_mfa=True,
         )
         with self.assertRaises(SystemExit) as cm:
             _refuse_if_no_users(cfg)
@@ -120,10 +121,11 @@ class DaemonRefusesIfNoUsers(unittest.TestCase):
         from backend.config import Config
         from backend.security.bootstrap import create_bootstrap_admin
         cfg = Config(
-            bind_host="127.0.0.1", bind_port=8052, config_dir="/tmp",
-            db_url=f"sqlite:///{self.db_path}", audit_log="/tmp/a.jsonl",
-            secret_key="x" * 32, cors_origins=[], pihole_ftl_db="/tmp/x",
-            unbound_port=5335, require_mfa=True,
+            bind_host="127.0.0.1", bind_port=8053, config_dir="/tmp",
+            state_dir="/tmp", db_url=f"sqlite:///{self.db_path}",
+            audit_log="/tmp/a.jsonl", secret_key="x" * 32, cors_origins=[],
+            pihole_ftl_db="/tmp/x", pihole_api="https://127.0.0.1/api",
+            pihole_app_password="", pihole_admin_url="/admin", require_mfa=True,
         )
         create_bootstrap_admin(_FakeAudit())
         _refuse_if_no_users(cfg)  # must not raise

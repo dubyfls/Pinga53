@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+[Unit]
+Description=Pinga53 dashboard
+Documentation=https://github.com/dubyfls/Pinga53
+After=network-online.target unbound.service pihole-FTL.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pinga53
+Group=pinga53
+EnvironmentFile=/etc/pinga53/dashboard.env
+WorkingDirectory=/opt/pinga53/dashboard
+ExecStart=/opt/pinga53/dashboard/venv/bin/pinga53d
+Restart=on-failure
+RestartSec=3
+
+# --- hardening ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0027
+
+# writable paths — only the dashboard's own state and its TLS cert dir.
+ReadWritePaths=/var/lib/pinga53 /var/log/pinga53 /etc/pinga53/dashboard/tls
+
+# read-only access to what it reads
+ReadOnlyPaths=/etc/pinga53/dashboard /etc/pinga53/scamwall /etc/unbound/unbound.conf.d /etc/unbound/rpz /var/lib/scamwall /etc/pihole
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# Pinga53 dashboard: the non-root service user is permitted to invoke
+# exactly ONE binary as root, with no password, under this filename only.
+# Validated with `visudo -cf dashboard/deploy/sudoers.d/pinga53-dashboard`
+# in install.sh before dropping it into /etc/sudoers.d/.
+Defaults!/usr/local/sbin/pinga53-helper !requiretty
+pinga53 ALL=(root) NOPASSWD: /usr/local/sbin/pinga53-helper
