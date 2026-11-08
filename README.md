@@ -68,8 +68,9 @@ agreement with each provider whose terms require one.
 
 ## Install
 
-You need Debian 12+ or Ubuntu 22.04+, systemd, and Pi-hole v6 already
-installed and working.
+You need Debian 12+ or Ubuntu 22.04+, systemd, and Pi-hole v6. If you don't
+have Pi-hole yet, pass `--install-pihole` and the installer will run the
+upstream Pi-hole installer first.
 
 ```bash
 git clone https://github.com/dubyfls/Pinga53.git
@@ -82,6 +83,21 @@ to keep your current upstream; ScamWall still logs, but Pi-hole won't use it.
 
 See [INSTALL.md](INSTALL.md) for what the installer does, how to add the
 abuse.ch key, how to read the shadow log, and how to uninstall.
+
+## Dashboard (v0.2.0-alpha)
+
+Alongside the engine, v0.2 installs the **Pinga53 dashboard** on
+`https://<host>:8053`: login with password + TOTP MFA, forced password
+change on first login, a hash-chained audit log, and a **ScamWall** page
+that shows what the engine is doing (mode, STOP flag, standing hosts, feed
+health, last run) and lets the admin toggle mode, pause automatic blocking,
+add/remove protected hosts, and run a decision cycle. Every owner action is
+behind a fresh MFA step-up and is dispatched through a tiny root helper
+with a fixed subcommand allowlist.
+
+**Pi-hole's own web UI is untouched.** It stays at `http://<host>/admin`
+with its own password (`sudo pihole setpassword`). The dashboard links to
+it directly. Skip the dashboard entirely with `--no-dashboard`.
 
 ### Go live
 
