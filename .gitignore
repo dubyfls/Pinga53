@@ -13,3 +13,12 @@ secrets/
 *.swp
 .idea/
 .vscode/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# node
+node_modules/
