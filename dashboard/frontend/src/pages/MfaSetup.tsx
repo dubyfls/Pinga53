@@ -8,6 +8,15 @@ import RecoveryCodes from "../components/RecoveryCodes";
 
 type Start = { secret_blocks: string; qr_svg: string; expires_at: string };
 
+// The server renders the QR at a fixed pixel size with no viewBox, so CSS
+// sizing clipped it (270px drawn into a 200px box: unscannable). Give it a
+// viewBox so it scales whole.
+function scalableSvg(svg: string): string {
+  if (/viewBox=/.test(svg)) return svg;
+  return svg.replace(/<svg([^>]*?)\swidth="(\d+(?:\.\d+)?)"\s+height="(\d+(?:\.\d+)?)"/,
+    (_m, pre, w, h) => `<svg${pre} viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"`);
+}
+
 export function MfaEnroll({ onDone }: { onDone: () => void }) {
   const [start, setStart] = useState<Start | null>(null);
   const [code, setCode] = useState(""); const [codes, setCodes] = useState<string[] | null>(null);
@@ -43,7 +52,7 @@ export function MfaEnroll({ onDone }: { onDone: () => void }) {
       {start ? (
         <>
           {/* server-rendered SVG from segno (backend/api/setup.py), same origin */}
-          <div className="mfa-qr" dangerouslySetInnerHTML={{ __html: start.qr_svg }} />
+          <div className="mfa-qr" dangerouslySetInnerHTML={{ __html: scalableSvg(start.qr_svg) }} />
           <div className="mfa-key"><span>Key</span><code>{start.secret_blocks}</code></div>
           <div className="mfa-exp">Key valid until {new Date(start.expires_at + (start.expires_at.endsWith("Z") ? "" : "Z")).toLocaleTimeString()}</div>
         </>
