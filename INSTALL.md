@@ -124,8 +124,61 @@ in its web interface under **Settings → DNS**.
 
 ## Troubleshooting
 
-| Symptom | Check |
+### Quick health check
+
+```bash
+systemctl status unbound pihole-FTL --no-pager          # both should be active
+dig +short @127.0.0.1 -p 5335 example.com               # Unbound answers
+dig +short @127.0.0.1 example.com                        # Pi-hole answers
+sudo unbound-checkconf                                   # config is valid
+systemctl list-timers --no-pager | grep -E 'scamwall|pinga53'   # 6 timers listed
+sudo -u scamwall scamwall doctor --offline --no-credential            # engine config + trust material
+```
+
+### Logs
+
+```bash
+journalctl -u scamwall-fetch -n 50 --no-pager            # feed downloads
+journalctl -u scamwall-run -n 50 --no-pager              # decisions, zone written
+journalctl -u pinga53-scamwall-zone-install -n 20 --no-pager   # zone loaded into Unbound
+journalctl -u unbound -n 50 --no-pager                   # resolver errors
+sudo cat /var/log/pinga53/scamwall-install.log           # zone install history
+```
+
+### Run a step now (instead of waiting for its timer)
+
+```bash
+sudo systemctl start scamwall-fetch.service
+sudo systemctl start scamwall-run.service
+sudo systemctl start pinga53-scamwall-zone-install.service
+```
+
+### What is blocked (or would be, in shadow mode)
+
+```bash
+grep -c CNAME /etc/unbound/rpz/scamwall.zone             # entries in the zone
+grep CNAME /etc/unbound/rpz/scamwall.zone                # the hosts
+journalctl -u unbound | grep 'rpz: applied \[scamwall\]' # lookups that hit it
+```
+
+### Common problems
+
+| Symptom | Cause and fix |
 | --- | --- |
-| `unbound-checkconf failed` | `sudo unbound-checkconf`; another file may define a conflicting `rpz:` or `port:` |
-| Nothing in the zone after a day | `journalctl -u scamwall-fetch` and `journalctl -u scamwall-run`; a domain needs two independent sources |
-| DNS stops resolving | `sudo ./install.sh --uninstall` removes Pinga53's Unbound file and reloads Unbound |
+| `unbound-checkconf failed` | Another file defines a conflicting `rpz:` or `port:`. Run `sudo unbound-checkconf` to see the file and line. |
+| The zone stays empty | A domain needs two independent sources. Check `journalctl -u scamwall-fetch` for failing feeds, then `journalctl -u scamwall-run` for the decision. |
+| `missing input: .../registry.json` | Wrong owner on the config. Fix: `sudo chown root:scamwall /etc/pinga53/scamwall/*.json && sudo chmod 0640 /etc/pinga53/scamwall/*.json` |
+| URLhaus / ThreatFox say "skipped" | No abuse.ch key. See "Optional: abuse.ch key" above. |
+| A site you need is blocked | Add it to Pi-hole's allow list, or to `/etc/pinga53/scamwall/protected.txt`, then run the three steps above. |
+| DNS stops resolving | `sudo touch /etc/pinga53/scamwall/STOP-AUTOMATIC`, then `sudo ./install.sh --uninstall` if needed. Pi-hole keeps working. |
+
+### Passwords
+
+Pinga53 v0.1 has no web UI and no password of its own. You manage it with
+the commands above. The dashboard you log in to is Pi-hole's.
+
+```bash
+sudo pihole setpassword          # change the Pi-hole web UI password (prompts)
+```
+
+You can also change it in the Pi-hole web UI under **Settings → Web interface / API**.

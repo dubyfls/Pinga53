@@ -115,7 +115,7 @@ both licenses. Questions about commercial use: [COMMERCIAL.md](COMMERCIAL.md).
 
 ## Project
 
-- [INSTALL.md](INSTALL.md): install, configure, uninstall
+- [INSTALL.md](INSTALL.md): install, configure, troubleshoot, uninstall
 - [SECURITY.md](SECURITY.md): report a vulnerability
 - [CONTRIBUTING.md](CONTRIBUTING.md): how to help
 - [NOTICE](NOTICE): copyright and third-party notices
