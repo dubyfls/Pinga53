@@ -4,10 +4,12 @@
 # install.sh: install Pinga53 (ScamWall engine + Unbound RPZ) beside an
 # existing Pi-hole v6 on Debian or Ubuntu.
 #
-#   sudo ./install.sh                  # install in SHADOW mode (logs, never blocks)
-#   sudo ./install.sh --set-upstream   # also point Pi-hole at Unbound (127.0.0.1#5335)
-#   sudo ./install.sh --enforce        # switch an installed Pinga53 from shadow to blocking
-#   sudo ./install.sh --uninstall      # remove Pinga53; keeps Pi-hole and Unbound
+#   sudo ./install.sh                    # engine in SHADOW mode + dashboard on https://<host>:8053
+#   sudo ./install.sh --set-upstream     # also point Pi-hole at Unbound (127.0.0.1#5335)
+#   sudo ./install.sh --install-pihole   # install Pi-hole first (upstream installer), then continue
+#   sudo ./install.sh --no-dashboard     # engine only (do not install the dashboard)
+#   sudo ./install.sh --enforce          # switch an installed Pinga53 from shadow to blocking
+#   sudo ./install.sh --uninstall        # remove Pinga53 + dashboard; keep Pi-hole, keep local state
 #
 # What it does, in order:
 #   1. checks: root, Debian/Ubuntu, systemd, Pi-hole v6 (pihole-FTL)
@@ -45,16 +47,32 @@ say()  { printf '\033[1;32m[pinga53]\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[pinga53]\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[1;31m[pinga53] FATAL:\033[0m %s\n' "$*" >&2; exit 1; }
 
-MODE=install SET_UPSTREAM=false
+MODE=install SET_UPSTREAM=false INSTALL_PIHOLE=false DASHBOARD=true
 for a in "$@"; do
   case "$a" in
     --set-upstream) SET_UPSTREAM=true ;;
+    --install-pihole) INSTALL_PIHOLE=true ;;
+    --no-dashboard) DASHBOARD=false ;;
     --enforce) MODE=enforce ;;
     --uninstall) MODE=uninstall ;;
     -h|--help) sed -n '4,30p' "$0"; exit 0 ;;
     *) die "unknown option: $a (see --help)" ;;
   esac
 done
+
+# Dashboard paths.
+DASH_SRC="$HERE/dashboard"
+DASH_ROOT=/opt/pinga53/dashboard
+DASH_VENV="$DASH_ROOT/venv"
+DASH_USER=pinga53
+DASH_CONF=/etc/pinga53/dashboard
+DASH_ENV=/etc/pinga53/dashboard.env
+DASH_STATE=/var/lib/pinga53
+DASH_LOG=/var/log/pinga53
+DASH_TLS="$DASH_CONF/tls"
+DASH_HELPER=/usr/local/sbin/pinga53-helper
+DASH_SUDOERS=/etc/sudoers.d/pinga53-dashboard
+DASH_UNIT=/etc/systemd/system/pinga53-dashboard.service
 
 [ "$(id -u)" -eq 0 ] || die "run as root: sudo $0 $*"
 command -v systemctl >/dev/null || die "systemd is required"
@@ -89,13 +107,23 @@ if [ "$MODE" = uninstall ]; then
   say "stopping timers"
   for t in $TIMERS; do systemctl disable --now "$t" 2>/dev/null || true; done
   for u in $TIMERS; do rm -f "/etc/systemd/system/$u" "/etc/systemd/system/${u%.timer}.service"; done
+
+  if [ -f "$DASH_UNIT" ]; then
+    say "stopping and removing the dashboard unit"
+    systemctl disable --now pinga53-dashboard.service 2>/dev/null || true
+    rm -f "$DASH_UNIT"
+  fi
+  rm -f "$DASH_SUDOERS" "$DASH_HELPER"
   systemctl daemon-reload
+
   rm -f "$UNBOUND_DROPIN" "$ZONE" "$ZONE.prev"
   if command -v unbound-checkconf >/dev/null; then reload_unbound; fi
   rm -f "$BIN" /usr/local/sbin/scamwall-run /usr/local/sbin/pinga53-scamwall-zone-install.sh /usr/local/sbin/pinga53-baseline-snapshot.sh
-  rm -rf /opt/pinga53/scamwall
-  say "removed. Kept: $CONF (your keys/policy), $STATE (history), Unbound, Pi-hole."
-  say "to remove those too: sudo rm -rf $CONF $STATE && sudo userdel scamwall"
+  rm -rf /opt/pinga53/scamwall "$DASH_ROOT"
+  say "removed. Kept: $CONF (engine keys/policy), $STATE (history),"
+  say "       $DASH_CONF (dashboard config), $DASH_STATE (dashboard DB), Unbound, Pi-hole."
+  say "to remove the dashboard DB too: sudo rm -rf $DASH_CONF $DASH_STATE $DASH_LOG && sudo userdel pinga53"
+  say "to remove the engine state too:  sudo rm -rf $CONF $STATE && sudo userdel scamwall"
   exit 0
 fi
 
@@ -120,7 +148,15 @@ case "${ID:-}:${ID_LIKE:-}" in
   debian:*|ubuntu:*|*:*debian*) ;;
   *) die "Debian or Ubuntu required (found ${PRETTY_NAME:-unknown})" ;;
 esac
-command -v pihole-FTL >/dev/null || die "Pi-hole v6 not found. Install Pi-hole first: https://docs.pi-hole.net"
+if ! command -v pihole-FTL >/dev/null; then
+  if $INSTALL_PIHOLE; then
+    say "Pi-hole not found. Installing it from the official installer (interactive)."
+    curl -sSL https://install.pi-hole.net | bash
+    command -v pihole-FTL >/dev/null || die "Pi-hole installer did not produce pihole-FTL"
+  else
+    die "Pi-hole v6 not found. Install Pi-hole first (https://docs.pi-hole.net), or re-run with --install-pihole."
+  fi
+fi
 ftl_major="$(pihole-FTL --version 2>/dev/null | grep -oE 'v[0-9]+' | head -1 | tr -d v || true)"
 [ "${ftl_major:-0}" -ge 6 ] || die "Pi-hole FTL v6 or newer required (found ${ftl_major:-unknown})"
 [ -d "$ENGINE/cmd/scamwall" ] || die "run from the repository root (engine/ not found next to install.sh)"
@@ -130,7 +166,7 @@ say "Pi-hole FTL v$ftl_major on ${PRETTY_NAME:-Linux}"
 say "installing packages"
 export DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=l
 apt-get update -qq
-apt-get install -y -qq unbound bind9-dnsutils bind9-utils python3 sqlite3 curl ca-certificates tar >/dev/null
+apt-get install -y -qq unbound bind9-dnsutils bind9-utils python3 python3-venv sqlite3 curl ca-certificates tar openssl rsync >/dev/null
 
 # ------------------------------------------------------------------ 3. Go
 go_ok() { command -v go >/dev/null && go version | grep -qE "go(1\.(2[6-9]|[3-9][0-9])|[2-9])\."; }
@@ -241,9 +277,99 @@ for t in $TIMERS; do systemctl enable --now "$t" >/dev/null; done
 ans="$(dig +short +time=5 @127.0.0.1 -p 5335 example.com | head -1)"
 [ -n "$ans" ] || die "Unbound does not resolve example.com after install; run: sudo ./install.sh --uninstall"
 
+# ------------------------------------------------------------------ 10. dashboard
+if $DASHBOARD; then
+  [ -d "$DASH_SRC/backend" ] || die "dashboard/ not found next to install.sh; cannot install dashboard"
+  say "installing the Pinga53 dashboard"
+
+  id "$DASH_USER" >/dev/null 2>&1 \
+    || useradd --system --home-dir "$DASH_STATE" --shell /usr/sbin/nologin "$DASH_USER"
+  # read-only access to ScamWall state (zone, records headers, metrics, journal)
+  usermod -aG scamwall "$DASH_USER"
+
+  install -d -o root -g root -m 0755 /opt/pinga53 "$DASH_ROOT"
+  install -d -o root -g "$DASH_USER" -m 0750 "$DASH_CONF"
+  install -d -o "$DASH_USER" -g "$DASH_USER" -m 0750 "$DASH_TLS"
+  install -d -o "$DASH_USER" -g "$DASH_USER" -m 0750 "$DASH_STATE" "$DASH_STATE/audit" "$DASH_LOG"
+
+  # application source
+  rsync -a --delete --exclude 'node_modules' --exclude 'build.sh' --exclude '__pycache__' \
+      --exclude 'tests' --exclude 'pytest.ini' \
+      "$DASH_SRC/backend/"  "$DASH_ROOT/backend/"
+  rsync -a --delete --exclude 'node_modules' --exclude 'build.sh' --exclude 'src' \
+      --exclude 'tsconfig.json' --exclude 'vite.config.ts' --exclude 'package.json' \
+      --exclude 'package-lock.json' --exclude '.gitignore' --exclude 'index.html' \
+      "$DASH_SRC/frontend/dist/" "$DASH_ROOT/frontend/dist/"
+  chown -R root:root "$DASH_ROOT/backend" "$DASH_ROOT/frontend"
+
+  # python venv + pinned deps
+  if [ ! -x "$DASH_VENV/bin/python" ]; then
+    python3 -m venv "$DASH_VENV"
+  fi
+  "$DASH_VENV/bin/pip" install -q --upgrade pip
+  "$DASH_VENV/bin/pip" install -q --require-hashes -r "$DASH_SRC/backend/requirements.txt" \
+    || "$DASH_VENV/bin/pip" install -q -r "$DASH_SRC/backend/requirements.txt"
+  cat >"$DASH_VENV/bin/pinga53d" <<EOF
+#!/usr/bin/env bash
+set -Eeuo pipefail
+exec "$DASH_VENV/bin/python" -m backend.main "\$@"
+EOF
+  chmod 0755 "$DASH_VENV/bin/pinga53d"
+  ln -sf "$DASH_VENV/bin/pinga53d" /usr/local/bin/pinga53d
+  (cd "$DASH_ROOT" && ln -sfn "$DASH_SRC/frontend/dist" "$DASH_ROOT/frontend/dist" 2>/dev/null || true)
+
+  # env file (skip if already present)
+  if [ ! -f "$DASH_ENV" ]; then
+    install -o root -g "$DASH_USER" -m 0640 "$DASH_SRC/deploy/dashboard.env.example" "$DASH_ENV"
+    jwt_key="$(openssl rand -hex 32)"
+    sed -i "s|^PINGA53_SECRET_KEY=.*|PINGA53_SECRET_KEY=$jwt_key|" "$DASH_ENV"
+    unset jwt_key
+    say "  wrote $DASH_ENV (fill in PINGA53_PIHOLE_APP_PASSWORD)"
+  else
+    say "  keeping existing $DASH_ENV"
+  fi
+
+  # helper + sudoers
+  install -m 0755 "$DASH_SRC/deploy/pinga53-helper" "$DASH_HELPER"
+  tmp_sudo="$(mktemp)"
+  install -m 0440 "$DASH_SRC/deploy/sudoers.d/pinga53-dashboard" "$tmp_sudo"
+  visudo -cf "$tmp_sudo" >/dev/null || die "sudoers drop-in fails visudo check"
+  install -m 0440 -o root -g root "$tmp_sudo" "$DASH_SUDOERS"
+  rm -f "$tmp_sudo"
+
+  # systemd unit
+  install -m 0644 "$DASH_SRC/deploy/systemd/pinga53-dashboard.service" "$DASH_UNIT"
+  systemctl daemon-reload
+
+  # TLS cert (self-signed first-run)
+  bash "$DASH_SRC/deploy/gen-tls-cert.sh" "$DASH_TLS" "$DASH_USER"
+  if ! grep -q '^PINGA53_TLS_CERT=.' "$DASH_ENV"; then
+    sed -i "s|^PINGA53_TLS_CERT=.*|PINGA53_TLS_CERT=$DASH_TLS/cert.pem|" "$DASH_ENV"
+    sed -i "s|^PINGA53_TLS_KEY=.*|PINGA53_TLS_KEY=$DASH_TLS/key.pem|"   "$DASH_ENV"
+  fi
+
+  # bootstrap the first administrator and print the one-time password.
+  if ! systemd-run --quiet --wait --uid="$DASH_USER" \
+      --property=EnvironmentFile="$DASH_ENV" \
+      --property=WorkingDirectory="$DASH_ROOT" \
+      /usr/local/bin/pinga53d list-users 2>/dev/null | grep -q .; then
+    say "  provisioning the first administrator"
+    systemd-run --quiet --wait --uid="$DASH_USER" \
+      --property=EnvironmentFile="$DASH_ENV" \
+      --property=WorkingDirectory="$DASH_ROOT" \
+      /usr/local/bin/pinga53d bootstrap
+  fi
+
+  systemctl enable --now pinga53-dashboard.service
+  say "  dashboard: https://$(hostname -s):8053"
+fi
+
 say "installed in SHADOW mode: ScamWall logs what it would block and blocks nothing."
 say "  status:       journalctl -u scamwall-run -n 20"
 say "  hits so far:  journalctl -u unbound | grep 'rpz: applied \\[scamwall\\]'"
 say "  abuse.ch key: see INSTALL.md (optional, adds URLhaus + ThreatFox)"
 say "  go live:      sudo ./install.sh --enforce   (after a few days in shadow)"
+if $DASHBOARD; then
+  say "  Pi-hole admin stays at http://$(hostname -s)/admin (set its password with 'sudo pihole setpassword')"
+fi
 $SET_UPSTREAM || say "  Pi-hole still uses its current upstream; add --set-upstream to route it through Unbound."

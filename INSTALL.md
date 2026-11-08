@@ -18,10 +18,12 @@ sudo ./install.sh --set-upstream
 
 | Option | Effect |
 | --- | --- |
-| *(none)* | Install in shadow mode. Pi-hole's upstream is left as it is. |
+| *(none)* | Install engine (shadow mode) and the dashboard. Pi-hole upstream left as-is. |
 | `--set-upstream` | Also set Pi-hole's upstream DNS to Unbound (`127.0.0.1#5335`). |
+| `--install-pihole` | Install Pi-hole first (upstream installer, interactive), then continue. |
+| `--no-dashboard` | Engine only; skip the dashboard install. |
 | `--enforce` | Switch an installed Pinga53 from shadow to blocking. |
-| `--uninstall` | Remove Pinga53. Keeps Pi-hole, Unbound, your keys and history. |
+| `--uninstall` | Remove Pinga53 (engine + dashboard). Keeps Pi-hole, Unbound, keys, history. |
 
 ### What the installer does
 
@@ -103,6 +105,69 @@ overwrite it.
 | `automatic.block_lifetime` | 168h | how long a block lasts after its sources go quiet |
 | `automatic.on_source_outage` | hold_existing_blocks | keep blocks when a feed is down |
 
+## Dashboard (v0.2.0-alpha)
+
+By default `install.sh` also installs the Pinga53 dashboard: a small FastAPI
+service that serves a React UI with login, MFA, an audit view, and a
+ScamWall control page. It runs on **port 8053 over HTTPS** (Pi-hole v6 owns
+80/443). Pi-hole's own admin UI stays at `/admin` and is unaffected.
+
+### Ports and TLS
+
+- `https://<host>:8053` — the dashboard.
+- First-start generates a **self-signed certificate** at
+  `/etc/pinga53/dashboard/tls/{cert.pem,key.pem}` with a SAN list covering
+  the system hostname and each non-loopback IPv4 address. Browsers will
+  warn you once; accept it, then bookmark the page.
+- To use your own certificate, set `PINGA53_TLS_CERT` / `PINGA53_TLS_KEY`
+  in `/etc/pinga53/dashboard.env` to the paths of your cert and key.
+
+### Pi-hole app password
+
+The dashboard calls the Pi-hole v6 REST API (status + today's query counts)
+server-side. The browser never handles the password. Set the password on
+Pi-hole, then paste it into `/etc/pinga53/dashboard.env` once:
+
+```bash
+sudo pihole setpassword
+sudo editor /etc/pinga53/dashboard.env    # PINGA53_PIHOLE_APP_PASSWORD=...
+sudo systemctl restart pinga53-dashboard
+```
+
+The Pi-hole web UI continues to work with that same password — Pinga53
+doesn't change anything about how Pi-hole authenticates you.
+
+### First login
+
+At the end of `install.sh` a one-time administrator password is printed. Go
+to `https://<host>:8053`, log in as `administrator` with that password,
+then **the UI forces a password change and MFA enrollment** (scan the QR
+with any TOTP app). After that you have ten recovery codes; save them.
+
+If you missed the password, re-run the bootstrap command (keeping the DB
+and the `SECRET_KEY` from `/etc/pinga53/dashboard.env`):
+
+```bash
+sudo systemctl stop pinga53-dashboard
+sudo -u pinga53 EnvironmentFile=/etc/pinga53/dashboard.env pinga53d bootstrap
+sudo systemctl start pinga53-dashboard
+```
+
+### Changing your password
+
+From the dashboard's **Account** page: enter current password, new password,
+and (if MFA is enrolled) a current TOTP code. The same page lets you
+reset your MFA secret and regenerate recovery codes.
+
+### Owner actions on the ScamWall page
+
+Admins can toggle shadow↔enforce, pause and resume automatic blocking, add
+or remove protected hosts, and run one fetch+decide+install cycle on
+demand. Each action requires re-entering a fresh TOTP code and is
+dispatched through a tiny setuid-free root helper
+(`/usr/local/sbin/pinga53-helper`) whose subcommand set is fixed. Every
+action is audited.
+
 ## Upgrade
 
 ```bash
@@ -117,10 +182,15 @@ Your keys, policy, protected list and history are kept.
 sudo ./install.sh --uninstall
 ```
 
-This removes the timers, binary and Pinga53's Unbound file. It keeps
-`/etc/pinga53/scamwall` and `/var/lib/scamwall`; the command prints how to
-remove those too. If you used `--set-upstream`, set Pi-hole's upstream back
-in its web interface under **Settings → DNS**.
+This removes the timers, engine binary, Pinga53's Unbound file, and the
+dashboard unit, helper, and sudoers drop-in. It keeps:
+
+- `/etc/pinga53/scamwall` and `/var/lib/scamwall` (engine state);
+- `/etc/pinga53/dashboard`, `/var/lib/pinga53`, `/var/log/pinga53`
+  (dashboard config + DB + audit log).
+
+The command prints how to remove those too. If you used `--set-upstream`,
+set Pi-hole's upstream back in its web interface under **Settings → DNS**.
 
 ## Troubleshooting
 

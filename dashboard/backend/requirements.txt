@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# Pinga53 dashboard backend runtime dependencies.
+fastapi
+uvicorn[standard]
+passlib[argon2]
+python-jose[cryptography]
+sqlalchemy
+pyotp
+requests>=2.31
+# Order 13 item 4 — server-rendered QR for MFA enrollment.
+# Pure-Python, no transitive deps. Pinned by version + wheel sha256.
+segno==1.6.1 \
+    --hash=sha256:e90c6ff82c633f757a96d4b1fb06cc932589b5237f33be653f52252544ac64df

@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: AGPL-3.0-only
+#
+# pinga53-helper — the only program the pinga53 service user is permitted
+# to invoke as root (via a sudoers drop-in that whitelists exactly this
+# path, this binary, and this subcommand set).
+#
+# The helper is deliberately tiny: it knows seven subcommands, validates
+# every argument it receives, and never passes arbitrary strings to a
+# shell. All ScamWall state changes initiated by the dashboard pass
+# through here; none bypass it.
+#
+# Allowed subcommands:
+#
+#   stop-on             create /etc/pinga53/scamwall/STOP-AUTOMATIC (policy emergency_disable_path)
+#   stop-off            remove it
+#   mode-shadow         add "rpz-action-override: passthru" to the scamwall rpz stanza
+#   mode-enforce        remove that override (zone entries answer NXDOMAIN)
+#   protect-add  HOST   append HOST to /etc/pinga53/scamwall/protected.txt
+#   protect-remove HOST remove HOST from the same file
+#   run-now             start scamwall-fetch, scamwall-run and
+#                       pinga53-scamwall-zone-install, in that order.
+#
+# Exit codes: 0 ok, 1 invalid argument, 2 refusal (not root, bad caller),
+# 3 operation failed (see stderr). Nothing is printed on stdout other than
+# the human-readable result of the operation.
+set -Eeuo pipefail
+umask 022
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export LC_ALL=C
+
+STATE_DIR=${PINGA53_SCAMWALL_STATE:-/var/lib/scamwall}
+STOP_FLAG=${PINGA53_SCAMWALL_STOP_FLAG:-/etc/pinga53/scamwall/STOP-AUTOMATIC}
+UNBOUND_CONF=${PINGA53_UNBOUND_CONF:-/etc/unbound/unbound.conf.d/pinga53.conf}
+PROTECTED=${PINGA53_PROTECTED:-/etc/pinga53/scamwall/protected.txt}
+SCAMWALL_BIN=${PINGA53_SCAMWALL_BIN:-/usr/local/bin/scamwall}
+INSTALL_LOG=${PINGA53_SCAMWALL_INSTALL_LOG:-/var/log/pinga53/scamwall-install.log}
+SYSTEMCTL=${PINGA53_SYSTEMCTL:-systemctl}
+CHECKCONF=${PINGA53_UNBOUND_CHECKCONF:-unbound-checkconf}
+
+die()  { printf 'pinga53-helper: %s\n' "$*" >&2; exit 3; }
+bad()  { printf 'pinga53-helper: invalid argument: %s\n' "$*" >&2; exit 1; }
+nope() { printf 'pinga53-helper: refusing: %s\n' "$*" >&2; exit 2; }
+
+# must be root. When invoked under sudo the EUID is 0; without sudo it
+# won't be able to touch the protected paths anyway, but refuse early.
+if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+  nope "must run as root (invoke via the sudoers drop-in)"
+fi
+
+# Validate a hostname argument strictly.
+#
+# Rules: <=253 chars total, labels 1..63 chars, labels start and end with
+# [a-z0-9], internal chars [a-z0-9-], at least one dot. Punycode (IDNA)
+# accepted (the API has already normalised to IDNA before calling).
+validate_host() {
+  local h=$1
+  [ -n "$h" ] || bad "empty host"
+  [ ${#h} -le 253 ] || bad "host too long"
+  # Reject control characters outright — grep -E with ^...$ matches per-line
+  # and would otherwise pass a two-line "a.b\nc.d" argument.
+  case "$h" in
+    *[[:cntrl:]]*|*' '*) bad "host contains control or whitespace character" ;;
+  esac
+  if ! printf '%s' "$h" | grep -qE '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$'; then
+    bad "host shape or characters"
+  fi
+}
+
+cmd_stop_on() {
+  mkdir -p -- "$(dirname -- "$STOP_FLAG")"
+  : > "$STOP_FLAG"
+  echo "stop-on: created $STOP_FLAG"
+}
+
+cmd_stop_off() {
+  rm -f -- "$STOP_FLAG"
+  echo "stop-off: removed $STOP_FLAG"
+}
+
+# The order's engine defines how 'mode' is expressed in pinga53.conf. We
+# look for a rpz line and set its action-override. If no rpz stanza is
+# present we refuse — this is not the helper's job to invent.
+set_mode() {
+  # Same stanza install.sh writes: "rpz-action-override: passthru" present
+  # = shadow, absent = enforce. Edit a copy, check it, then swap it in;
+  # a config that fails unbound-checkconf is never left in place.
+  local wanted=$1
+  [ -f "$UNBOUND_CONF" ] || die "unbound config not found: $UNBOUND_CONF"
+  grep -q '^rpz:' "$UNBOUND_CONF" || die "no rpz stanza in $UNBOUND_CONF"
+  local tmp bak
+  tmp=$(mktemp -p "$(dirname -- "$UNBOUND_CONF")" .pinga53.unbound.XXXXXX)
+  bak=$(mktemp -p "$(dirname -- "$UNBOUND_CONF")" .pinga53.unbound.bak.XXXXXX)
+  trap 'rm -f -- "$tmp" "$bak"' EXIT
+  cp -p -- "$UNBOUND_CONF" "$bak"
+  awk -v mode="$wanted" '
+    /^[[:space:]]*rpz-action-override:/ { next }
+    { print }
+    mode == "shadow" && /^[[:space:]]*zonefile:/ && !done { print "    rpz-action-override: passthru"; done=1 }
+  ' "$bak" > "$tmp"
+  if [ "$wanted" = shadow ] && ! grep -q 'rpz-action-override: passthru' "$tmp"; then
+    die "could not place the passthru override (no zonefile: line)"
+  fi
+  install -m 0644 -o root -g root -- "$tmp" "$UNBOUND_CONF"
+  if ! "$CHECKCONF" >/dev/null 2>&1; then
+    install -m 0644 -o root -g root -- "$bak" "$UNBOUND_CONF"
+    die "unbound-checkconf rejected the change; previous config restored"
+  fi
+  "$SYSTEMCTL" reload unbound >/dev/null 2>&1 || "$SYSTEMCTL" restart unbound
+  rm -f -- "$tmp" "$bak"; trap - EXIT
+  echo "mode: $wanted"
+}
+cmd_mode_shadow()  { set_mode shadow; }
+cmd_mode_enforce() { set_mode enforce; }
+
+protected_group() { getent group scamwall >/dev/null 2>&1 && echo scamwall || id -gn; }
+cmd_protect_add() {
+  validate_host "${1:-}"
+  install -d -m 0755 -- "$(dirname -- "$PROTECTED")"
+  touch -- "$PROTECTED"
+  # avoid duplicates
+  if grep -qxF -- "$1" "$PROTECTED"; then
+    echo "protect-add: already present: $1"
+    return 0
+  fi
+  printf '%s\n' "$1" >> "$PROTECTED"
+  chgrp -- "$(protected_group)" "$PROTECTED" 2>/dev/null || true; chmod 0640 -- "$PROTECTED"
+  echo "protect-add: $1"
+}
+
+cmd_protect_remove() {
+  validate_host "${1:-}"
+  [ -f "$PROTECTED" ] || { echo "protect-remove: file missing"; return 0; }
+  local tmp
+  tmp=$(mktemp -p "$(dirname -- "$PROTECTED")" .protected.XXXXXX)
+  grep -vxF -- "$1" "$PROTECTED" > "$tmp" || true
+  install -m 0640 -- "$tmp" "$PROTECTED"
+  chgrp -- "$(protected_group)" "$PROTECTED" 2>/dev/null || true
+  rm -f -- "$tmp"
+  echo "protect-remove: $1"
+}
+
+cmd_run_now() {
+  install -d -m 0755 -- "$(dirname -- "$INSTALL_LOG")"
+  {
+    date -u +'%FT%TZ run-now begin'
+    "$SYSTEMCTL" start scamwall-fetch.service || echo "run-now: some sources failed to fetch (see journalctl -u scamwall-fetch)"
+    "$SYSTEMCTL" start scamwall-run.service || die "decision run failed (journalctl -u scamwall-run)"
+    "$SYSTEMCTL" start pinga53-scamwall-zone-install.service || die "zone install failed (journalctl -u pinga53-scamwall-zone-install)"
+    date -u +'%FT%TZ run-now end'
+  } >> "$INSTALL_LOG" 2>&1
+  echo "run-now: logged to $INSTALL_LOG"
+}
+
+sub=${1:-}
+shift || true
+case "$sub" in
+  stop-on)         [ $# -eq 0 ] || bad "stop-on takes no arguments";       cmd_stop_on ;;
+  stop-off)        [ $# -eq 0 ] || bad "stop-off takes no arguments";      cmd_stop_off ;;
+  mode-shadow)     [ $# -eq 0 ] || bad "mode-shadow takes no arguments";   cmd_mode_shadow ;;
+  mode-enforce)    [ $# -eq 0 ] || bad "mode-enforce takes no arguments";  cmd_mode_enforce ;;
+  protect-add)     [ $# -eq 1 ] || bad "protect-add HOST";                 cmd_protect_add "$1" ;;
+  protect-remove)  [ $# -eq 1 ] || bad "protect-remove HOST";              cmd_protect_remove "$1" ;;
+  run-now)         [ $# -eq 0 ] || bad "run-now takes no arguments";       cmd_run_now ;;
+  "" )
+    printf 'usage: pinga53-helper <subcommand> [arg]\n' >&2
+    printf 'subcommands: stop-on stop-off mode-shadow mode-enforce protect-add protect-remove run-now\n' >&2
+    exit 2 ;;
+  *)
+    nope "unknown subcommand: $sub" ;;
+esac
