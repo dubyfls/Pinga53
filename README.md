@@ -135,6 +135,7 @@ both licenses. Questions about commercial use: [COMMERCIAL.md](COMMERCIAL.md).
 - [SECURITY.md](SECURITY.md): report a vulnerability
 - [CONTRIBUTING.md](CONTRIBUTING.md): how to help
 - [NOTICE](NOTICE): copyright and third-party notices
+- [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md): every dependency and its license
 
 Pinga53 is an independent project. It is not affiliated with or endorsed by
 Pi-hole LLC, NLnet Labs (Unbound), abuse.ch, Spamhaus, OpenPhish,

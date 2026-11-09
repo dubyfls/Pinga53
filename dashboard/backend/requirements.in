@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+# Direct dependencies. requirements.txt is generated from this file:
+#   pip-compile --generate-hashes --strip-extras -o requirements.txt requirements.in
+fastapi
+uvicorn[standard]
+passlib[argon2]
+python-jose[cryptography]
+sqlalchemy
+pyotp
+requests>=2.31
+segno
