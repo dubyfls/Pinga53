@@ -287,7 +287,7 @@ if $DASHBOARD; then
   # read-only access to ScamWall state (zone, records headers, metrics, journal)
   usermod -aG scamwall "$DASH_USER"
 
-  install -d -o root -g root -m 0755 /opt/pinga53 "$DASH_ROOT"
+  install -d -o root -g root -m 0755 /opt/pinga53 "$DASH_ROOT" "$DASH_ROOT/backend" "$DASH_ROOT/frontend"
   install -d -o root -g "$DASH_USER" -m 0750 "$DASH_CONF"
   install -d -o "$DASH_USER" -g "$DASH_USER" -m 0750 "$DASH_TLS"
   install -d -o "$DASH_USER" -g "$DASH_USER" -m 0750 "$DASH_STATE" "$DASH_STATE/audit" "$DASH_LOG"
