@@ -270,8 +270,8 @@ systemctl daemon-reload
 say "first fetch (CERT Polska, Phishing.Database, OpenPhish; abuse.ch needs a key)"
 systemctl start pinga53-allowlist-export.service || warn "allow-list export failed (see: journalctl -u pinga53-allowlist-export)"
 systemctl start scamwall-fetch.service || warn "some sources failed to fetch (see: journalctl -u scamwall-fetch)"
-systemctl start scamwall-run.service || die "first decision run failed (see: journalctl -u scamwall-run)"
-systemctl start pinga53-scamwall-zone-install.service || die "zone install failed (see: journalctl -u pinga53-scamwall-zone-install)"
+systemctl start scamwall-run.service || warn "first decision run failed — engine retries on its timer (see: journalctl -u scamwall-run)"
+systemctl start pinga53-scamwall-zone-install.service || warn "zone install deferred — engine retries on its timer (see: journalctl -u pinga53-scamwall-zone-install)"
 reload_unbound
 for t in $TIMERS; do systemctl enable --now "$t" >/dev/null; done
 ans="$(dig +short +time=5 @127.0.0.1 -p 5335 example.com | head -1)"
