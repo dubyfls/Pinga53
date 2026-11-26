@@ -1,0 +1,6 @@
+# abuse.ch URLhaus recent.csv export (test fixture)
+# id,dateadded,url,url_status,last_online,threat,tags,urlhaus_link,reporter
+"1","2026-11-07 12:00:00","http://evil.example.com/a","online","2026-11-07 12:00:00","malware_download","elf","https://urlhaus.abuse.ch/url/1/","anon"
+"2","2026-11-07 12:00:00","http://Another.Evil.Example.com/b","online","2026-11-07 12:00:00","malware_download","exe","https://urlhaus.abuse.ch/url/2/","anon"
+"3","2026-11-07 12:00:00","http://192.0.2.5/c","online","2026-11-07 12:00:00","malware_download","","https://urlhaus.abuse.ch/url/3/","anon"
+"4","2026-11-07 12:00:00","http://offline.example.com/d","offline","2026-11-07 12:00:00","malware_download","","https://urlhaus.abuse.ch/url/4/","anon"

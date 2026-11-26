@@ -69,6 +69,14 @@ type threatfoxRecord struct {
 	LastSeen        string `json:"last_seen"`
 }
 
+// poster is the optional POST capability. The production HTTPClient
+// implements it; the test fakes (GET-only) do not, so ThreatFox falls back
+// to a GET with a query parameter they can key on. This keeps the shared
+// HTTPClient interface — and every existing fake — unchanged.
+type poster interface {
+	Post(ctx context.Context, url string, body []byte, reqHeaders map[string]string) ([]byte, map[string]string, error)
+}
+
 func (t *ThreatFox) Fetch(ctx context.Context, opts Options) ([]feed.EvidenceRecord, error) {
 	key, err := ReadKeyFile(opts.KeyPath)
 	if err != nil {
@@ -79,18 +87,20 @@ func (t *ThreatFox) Fetch(ctx context.Context, opts Options) ([]feed.EvidenceRec
 		client = NewHTTPClient(opts.Timeout, opts.MaxBytes, opts.UserAgent)
 	}
 
-	// ThreatFox uses POST with a JSON body. The HTTPClient seam is GET-only
-	// here (fetchers' most common shape); for ThreatFox, we fold the query
-	// into the URL as a query parameter the test fake can key on. The
-	// production ThreatFox endpoint also accepts a GET with query params.
-	url := fmt.Sprintf("%s?get_iocs=%d", t.URL, t.Days)
-
-	reqHeaders := map[string]string{"Auth-Key": key}
+	// ThreatFox's current API is POST with a JSON body and the Auth-Key in a
+	// header (a GET returns HTTP 405). Use the production client's Post; a
+	// GET-only fake (tests) takes the query-param fallback.
+	reqHeaders := map[string]string{"Auth-Key": key, "Content-Type": "application/json"}
+	reqBody := []byte(fmt.Sprintf(`{"query":"get_iocs","days":%d}`, t.Days))
 
 	var body []byte
 	err = doWithRetry(ctx, 3, func() error {
 		var inner error
-		body, _, inner = client.Get(ctx, url, reqHeaders)
+		if p, ok := client.(poster); ok {
+			body, _, inner = p.Post(ctx, t.URL, reqBody, reqHeaders)
+		} else {
+			body, _, inner = client.Get(ctx, fmt.Sprintf("%s?get_iocs=%d", t.URL, t.Days), reqHeaders)
+		}
 		return inner
 	})
 	if errors.Is(err, ErrNotFresh) {

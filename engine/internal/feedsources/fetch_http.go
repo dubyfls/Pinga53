@@ -128,6 +128,54 @@ func (p *productionHTTPClient) Get(ctx context.Context, rawURL string, reqHeader
 	return body, headers, nil
 }
 
+// Post performs one bounded HTTPS POST with a request body. Same https-only,
+// redirect, status, and byte-cap rules as Get. Used by ThreatFox, whose
+// current API requires POST with a JSON body.
+func (p *productionHTTPClient) Post(ctx context.Context, rawURL string, reqBody []byte, reqHeaders map[string]string) ([]byte, map[string]string, error) {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return nil, nil, errors.New("feedsources: URL could not be parsed")
+	}
+	if !strings.EqualFold(u.Scheme, "https") || u.Host == "" {
+		return nil, nil, fmt.Errorf("feedsources: URL is not https: scheme=%q", u.Scheme)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, rawURL, bytes.NewReader(reqBody))
+	if err != nil {
+		return nil, nil, fmt.Errorf("feedsources: could not build request: %w", err)
+	}
+	req.Header.Set("User-Agent", p.ua)
+	req.Header.Set("Accept-Encoding", "gzip")
+	for k, v := range reqHeaders {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return nil, nil, fmt.Errorf("feedsources: fetch failed: %s", audit.RedactURLs(err.Error()))
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	headers := map[string]string{}
+	for _, k := range []string{"ETag", "Last-Modified", "Content-Type", "Date"} {
+		if v := resp.Header.Get(k); v != "" {
+			headers[k] = v
+		}
+	}
+	if resp.StatusCode == http.StatusNotModified {
+		return nil, headers, ErrNotFresh
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, headers, fmt.Errorf("feedsources: HTTP %d", resp.StatusCode)
+	}
+
+	body, err := readBoundedBody(resp, p.maxBytes)
+	if err != nil {
+		return nil, headers, err
+	}
+	return body, headers, nil
+}
+
 func readBoundedBody(resp *http.Response, max int64) ([]byte, error) {
 	gzipped := strings.EqualFold(strings.TrimSpace(resp.Header.Get("Content-Encoding")), "gzip")
 	if !gzipped {
