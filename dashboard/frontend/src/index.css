@@ -202,3 +202,59 @@ table.t tr:hover td { background: var(--panel-2); color: var(--text); }
 .login-card--foot .lf input { background: transparent; border: 0; border-bottom: 1px solid rgba(125,138,160,0.45);
   border-radius: 0; padding: 8px 2px; box-shadow: none; }
 .login-card--foot .lf input:focus { border-bottom-color: var(--accent); outline: none; box-shadow: none; }
+
+
+/* ============================================================
+   Pinga53 login — embedded in the dashboard chrome
+   ============================================================ */
+.login-app .main { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.login-app .hdr { padding: 16px 18px 14px; }
+.login-app .brand { display: flex; align-items: center; gap: 11px; }
+.brand-mark { width: 30px; height: 30px; flex: none; }
+.login-nav .nav-item { opacity: .4; cursor: default; }
+.login-nav .nav-item:hover { background: transparent; color: var(--text-dim); }
+.nav-locked { display: flex; align-items: center; gap: 7px; padding: 14px 12px 6px; font-size: 10px; letter-spacing: 1px; color: var(--text-mute); }
+.lock-pill { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-mute); letter-spacing: 1px; }
+.lock-pill .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--text-mute); }
+
+.login-stage { position: relative; flex: 1; overflow: hidden; }
+.login-stage .citadelle-bg, .login-stage .globe-glass, .login-stage .road-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.login-stage .citadelle-bg { filter: drop-shadow(0 0 9px rgba(57,255,20,0.08)); }
+.globe-glass *, .road-bg * { vector-effect: non-scaling-stroke; }
+.gg-rim { fill: none; stroke: rgba(214,233,255,0.46); stroke-width: 1.5; }
+.gg-line { fill: none; stroke: rgba(165,205,235,0.20); stroke-width: 1; }
+.gg-sheen { fill: none; stroke: rgba(255,255,255,0.30); stroke-width: 1.3; }
+.gg-sheen2 { fill: none; stroke: var(--accent); stroke-opacity: .32; stroke-width: 1.1; }
+.gg-hand { fill: none; stroke: rgba(205,225,252,0.40); stroke-width: 1.7; }
+.gg-hand2 { fill: none; stroke: rgba(165,205,235,0.18); stroke-width: 1.1; }
+.gg-finger { fill: none; stroke: rgba(205,225,252,0.38); stroke-width: 1.6; }
+.rd-body { fill: rgba(150,200,230,0.04); stroke: rgba(198,220,250,0.26); stroke-width: 1.1; stroke-linejoin: round; }
+.rd-edge { fill: none; stroke: rgba(214,233,255,0.30); stroke-width: 1; }
+.rd-dash { fill: none; stroke: var(--accent); stroke-opacity: .48; stroke-width: 1.1; stroke-dasharray: 2 11; stroke-linecap: round; }
+.rd-tick { stroke: rgba(165,205,235,0.18); stroke-width: 1; }
+
+.login-panel { position: absolute; left: 46px; top: 50%; transform: translateY(-50%); z-index: 3; width: 300px;
+  background: rgba(14,18,26,0.72); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px;
+  backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05); }
+.login-pt { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+.login-pt b { color: var(--accent); }
+.login-panel .lf { margin-bottom: 11px; }
+.login-panel .login-btn { width: 100%; }
+.login-panel .login-foot { margin-top: 10px; font-size: 9px; letter-spacing: .5px; color: var(--text-mute); text-align: center; }
+
+.login-def { position: absolute; right: 26px; bottom: 22px; z-index: 3; max-width: 360px; text-align: right;
+  font-size: 11px; line-height: 1.5; color: var(--text-mute); pointer-events: none; }
+.login-def p { margin: 0 0 4px; }
+.login-def b { color: var(--text-dim); font-weight: 700; letter-spacing: 1px; }
+.login-def .mission { margin-top: 9px; color: var(--text-dim); }
+.login-def .mission b { color: var(--accent); letter-spacing: 1.5px; }
+.login-def .login-by { margin-top: 8px; font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; }
+.login-def .login-by b { color: var(--text); }
+
+@media (max-width: 900px) {
+  .login-app { grid-template-columns: 1fr; }
+  .login-app .side { display: none; }
+  .login-panel { left: 50%; transform: translate(-50%, -50%); width: min(320px, calc(100vw - 28px)); }
+  .login-def { left: 16px; right: 16px; max-width: none; text-align: center; }
+}

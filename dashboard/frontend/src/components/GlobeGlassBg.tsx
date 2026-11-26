@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Pinga53 — the world cradled in hands, liquid-glass line art. Drawn in the
+// SAME 1600x1000 frame and slice as CitadelleBg so it registers with the
+// fortress: the globe sits where the mountain was and the hands cradle up to
+// the fortress base. Original vector drawing; no raster image. Decorative
+// only: aria-hidden, pointer-events none.
+const ART = "<circle cx=\"800\" cy=\"560\" r=\"205\" class=\"gg-rim\"/>\n<line x1=\"800\" y1=\"355\" x2=\"800\" y2=\"765\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"560\" rx=\"173.8\" ry=\"205\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"560\" rx=\"96.2\" ry=\"205\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"560\" rx=\"205.0\" ry=\"39.0\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"470.1\" rx=\"184.3\" ry=\"35.0\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"649.9\" rx=\"184.3\" ry=\"35.0\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"398.5\" rx=\"126.2\" ry=\"24.0\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"721.5\" rx=\"126.2\" ry=\"24.0\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"362.9\" rx=\"56.5\" ry=\"10.7\" class=\"gg-line\"/>\n<ellipse cx=\"800\" cy=\"757.1\" rx=\"56.5\" ry=\"10.7\" class=\"gg-line\"/>\n<path d=\"M 650 432 Q 740 366 870 400\" class=\"gg-sheen\"/>\n<path d=\"M 680 398 Q 752 430 822 398\" class=\"gg-sheen2\"/>\n<path d=\"M 660 1040 C 668 850 702 923 734 835\" class=\"gg-hand\"/>\n<path d=\"M 756 1040 C 756 850 758 921 766 831\" class=\"gg-hand2\"/>\n<path d=\"M 734 835 C 716 791 742 763 770 751\" class=\"gg-hand\"/>\n<path d=\"M 740 759 C 706.9 707 623.7 510.2 607.7 466.2\" class=\"gg-finger\"/>\n<path d=\"M 756 751 C 714.4 699 605.7 559.3 589.7 515.3\" class=\"gg-finger\"/>\n<path d=\"M 772 747 C 725.0 695 600.1 611.5 584.1 567.5\" class=\"gg-finger\"/>\n<path d=\"M 788 749 C 738.6 697 606.4 664.1 590.4 620.1\" class=\"gg-finger\"/>\n<path d=\"M 778 791 C 760 803 792 777 725.4 355.1\" class=\"gg-finger\"/>\n<path d=\"M 940 1040 C 932 850 898 923 866 835\" class=\"gg-hand\"/>\n<path d=\"M 844 1040 C 844 850 842 921 834 831\" class=\"gg-hand2\"/>\n<path d=\"M 866 835 C 884 791 858 763 830 751\" class=\"gg-hand\"/>\n<path d=\"M 860 759 C 893.1 707 976.3 510.2 992.3 466.2\" class=\"gg-finger\"/>\n<path d=\"M 844 751 C 885.6 699 994.3 559.3 1010.3 515.3\" class=\"gg-finger\"/>\n<path d=\"M 828 747 C 875.0 695 999.9 611.5 1015.9 567.5\" class=\"gg-finger\"/>\n<path d=\"M 812 749 C 861.4 697 993.6 664.1 1009.6 620.1\" class=\"gg-finger\"/>\n<path d=\"M 822 791 C 840 803 808 777 874.6 355.1\" class=\"gg-finger\"/>";
+
+export default function GlobeGlassBg() {
+  return (
+    <svg className="globe-glass" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice"
+         aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: ART }} />
+  );
+}
