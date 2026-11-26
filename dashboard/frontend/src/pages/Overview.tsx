@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Overview — two side-by-side cards: Pi-hole status/queries and ScamWall summary.
+// Overview — two side-by-side cards: resolver status/queries and ScamWall summary.
 import { useEffect, useState } from "react";
 import { api } from "../security/api";
 import { Shield, Activity, ExternalLink } from "lucide-react";
@@ -47,10 +47,10 @@ export default function Overview() {
       {err && <div className="panel" style={{ padding: 10, color: "var(--danger)" }}>WARN {err}</div>}
 
       <div className="grid cols-2">
-        {/* Pi-hole card */}
+        {/* Resolver (DNS) card */}
         <div className="panel" style={{ padding: 14 }}>
           <div className="panel-title">
-            <Activity size={14} /> Pi-hole
+            <Activity size={14} /> Resolver
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 10 }}>
             <div>
@@ -73,7 +73,7 @@ export default function Overview() {
           </div>
           <div style={{ marginTop: 14 }}>
             <a className="btn" href={pi?.admin_url ?? "/admin"} target="_blank" rel="noopener noreferrer">
-              Open Pi-hole admin <ExternalLink size={12} style={{ marginLeft: 6 }}/>
+              Open resolver admin <ExternalLink size={12} style={{ marginLeft: 6 }}/>
             </a>
           </div>
         </div>

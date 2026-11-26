@@ -23,7 +23,7 @@ export default function Sidebar({ view, setView }: { view: View; setView: (v: Vi
     <aside className="side">
       <div className="brand">
         <div className="brand-name">PINGA<b>53</b></div>
-        <div className="brand-sub">Pi-hole · ScamWall · Audit</div>
+        <div className="brand-sub">Resolver · ScamWall · Audit</div>
       </div>
       <nav className="nav">
         {NAV.map(group => (
@@ -46,6 +46,7 @@ export default function Sidebar({ view, setView }: { view: View; setView: (v: Vi
       <div className="side-foot">
         {BRAND}<br />
         <span style={{ color: "var(--accent-dim)" }}>local-only</span>
+        <span className="attrib">Built on Pi-hole FTL + Unbound</span>
       </div>
     </aside>
   );

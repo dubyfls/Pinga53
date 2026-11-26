@@ -58,7 +58,7 @@ export default function Login({ onAuthed }: { onAuthed: () => void }) {
           <BrandMark />
           <div>
             <div className="brand-name" role="img" aria-label="Pinga53">PINGA<b>53</b></div>
-            <div className="brand-sub">Pi-hole · ScamWall · Audit</div>
+            <div className="brand-sub">Resolver · ScamWall · Audit</div>
           </div>
         </div>
         <nav className="nav login-nav" aria-hidden="true">
@@ -117,14 +117,15 @@ export default function Login({ onAuthed }: { onAuthed: () => void }) {
             <button className="login-btn" disabled={busy || !username || !password}>
               {busy ? "AUTHENTICATING…" : "ENTER PINGA53"}
             </button>
-            <div className="login-foot">engine: pihole-FTL · session is local-only</div>
+            <div className="login-foot">local resolver · session is local-only</div>
           </form>
 
           <div className="login-def">
-            <p><b>PINGA53</b> — local-first protective-DNS control plane for Pi-hole.</p>
+            <p><b>PINGA53</b> — local-first protective-DNS control plane.</p>
             <p><b>SCAMWALL</b> — the scam-domain detection engine: RPZ firewall + anomaly scoring.</p>
             <p className="mission"><b>MISSION</b> — block the scam before the click, on hardware you own, with data you keep.</p>
             <p className="login-by">A solo project by <b>Duplan DeCelestin Fils-Aime</b></p>
+            <p className="login-attrib">Built on Pi-hole FTL + Unbound</p>
           </div>
         </div>
       </div>

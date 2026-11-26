@@ -258,3 +258,6 @@ table.t tr:hover td { background: var(--panel-2); color: var(--text); }
   .login-panel { left: 50%; transform: translate(-50%, -50%); width: min(320px, calc(100vw - 28px)); }
   .login-def { left: 16px; right: 16px; max-width: none; text-align: center; }
 }
+
+.login-def .login-attrib { margin-top: 10px; font-size: 9px; letter-spacing: 1px; color: var(--text-mute); text-transform: uppercase; }
+.side-foot .attrib { display: block; margin-top: 4px; color: var(--text-mute); font-size: 9px; letter-spacing: .4px; }
